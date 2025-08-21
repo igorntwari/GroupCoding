@@ -12,40 +12,6 @@ class Product {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    static comparePrice(product1, product2) {
-        if (product1.price === product2.price) {
-            return `The Products price are equal`
-        }
-        return product1.price > product2.price ? product2 : product1;
-    }
-
-    static generateId() {
-        return Math.floor(100000 + Math.random() * 900000);
-    }
-}
-=======
     getInfo = function () {
         return `Product: ${this.name} (ID: ${this.id}) - $${this.price} - Category: ${this.category}`
     }
@@ -64,9 +30,18 @@ class Product {
         }
         this._stock = val;
     }
-    
 
+      static comparePrice(product1, product2) {
+        if (product1.price === product2.price) {
+            return `The Products price are equal`
+        }
+        return product1.price > product2.price ? product2 : product1;
+    }
+
+    static generateId() {
+        return Math.floor(100000 + Math.random() * 900000);
+    }
+    
 }
 
 
->>>>>>> c3fddb627ecddee23160602ff065d26449fbcffc
