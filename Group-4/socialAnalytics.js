@@ -15,7 +15,7 @@ class Post {
   }
 
   static getPostsByHashtag(posts, hashtag) {
-    return posts.filter(post => post.content.includes(#${hashtag}));
+    return posts.filter(post => post.content.includes("#${hashtag}"));
   }
 }
 
