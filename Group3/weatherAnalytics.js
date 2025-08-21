@@ -1,20 +1,30 @@
-class WeatherReading{
-  get comfortIndex(){
-    try{
-        if(this.temperature <100) return ("Temperature validation working");
-        
-      } catch(e){
-        throw new Error("Temperature must less than 100")
-      }
+class WeatherReading {
+  constructor(id, location, temperature, humidity, pressure, windSpeed, timestamp = Date.now()) {
+    this.id = id;
+    this.location = location;   
+    this.temperature = temperature; 
+    this.humidity = humidity;
+    this.pressure = pressure;
+    this.windSpeed = windSpeed;
+    this.timestamp = timestamp;
   }
-  get windCategory(){
-    this.windSpeed > 10 ? "strong": "moderate"
+
+  //  Method to convert Celsius to Fahrenheit
+  getTemperatureInFahrenheit() {
+    return (this.temperature * 9/5) + 32;
   }
-  isExtremeWeather = () =>{
-    if(this.temperature < 50 && this.temperature > 20 && this.windSpeed < 10 && this.humidity > 50 && pressure > 100){
-      return true
-    }else{
-      return false
-    }
+// string to all data
+   toString() {
+     return `Weather Reading [ID: ${this.id}]
+                 Location: ${this.location}
+                 Temperature: ${this.temperature}°C (${this.getTemperatureInFahrenheit()}°F)
+                 Humidity: ${this.humidity}%
+                 Pressure: ${this.pressure} hPa
+                 Wind Speed: ${this.windSpeed} km/h
+                 Timestamp: ${new Date(this.timestamp).toLocaleString()}`;
   }
 }
+
+
+const reading = new WeatherReading(1, "Kigali", 25, 60, 1012, 10);
+console.log(reading.toString())
