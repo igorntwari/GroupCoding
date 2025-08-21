@@ -120,7 +120,7 @@ const la = new Location("Los Angeles", 34.0522, -118.2437, "PST");
 const distance = Location.calculateDistance(nyc, la);
 console.log(distance > 2000); // Expected: true (distance in km)
 
-const miami = Location.fromCoordinates(25.7617, -80.1918, "Miami");
+const miami = Location.fromCoordinates(25.7617, -80.1918, "Miammi");
 console.log(miami.name); // Expected: "Miami"
 
  const reading = new WeatherReading(1, "New York", 25, 60, 1013, 15);
