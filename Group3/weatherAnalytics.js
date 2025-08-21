@@ -47,7 +47,85 @@ class WeatherReading {
 }
 
 
-const reading = new WeatherReading(1, "Miami", 30, 80, 1013, 25);
-console.log(reading.comfortIndex); // Expected: number between 0-100
-console.log(reading.windCategory); // Expected: "moderate" or "strong"
-console.log(reading.isExtremeWeather()); // Expected: boolean
+class Location {
+
+    //constructor 
+    constructor(name, latude, longitude, timezone) {
+         
+        this.name = name;
+        this.latude = latude;
+        this.longitude = longitude;
+        this.timezone = timezone;
+        this.readings_array = [];
+    }
+
+    //method2
+    static calculateDistance(loc1, loc2) {
+        //the earth radius
+        const ER = 6371
+        //circle = 360 deg
+        //radians = 2Pi * R
+
+        //commvert coordinates  to radians 
+
+        const Radians = (deg) => deg * (Math.PI / 180)
+
+        const Location1_lat = Radians(loc1.latude)
+        const Location1_long = Radians(loc1.longitude)
+        const Location2_lat = Radians(loc2.latude)
+        const Location2_long = Radians(loc2.longitude)
+
+
+
+        //finding the different 
+
+        let Lat_Location = Location2_lat - Location1_lat
+        let Long_Location = Location2_long - Location1_long
+
+        //finding harversine formuale 
+
+        const a = Math.sin(Lat_Location / 2) ** 2 +
+            Math.cos(Location1_lat) * Math.cos(Location2_lat) *
+            Math.sin(Long_Location / 2) ** 2;
+
+
+        //centering the angle 
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = ER * c;
+
+        return distance;
+
+    };
+
+    //method22
+    static fromCoordinates(lat, lng, name) {
+        return {
+            lat, lng, name
+        }
+    };
+
+    //method 2 
+    addReading(reading) {
+       this.readings_array.push(reading);
+       this.readings_array.sort((x,y)=> x.timestamp - y.timestamp)
+
+    }
+
+
+}
+
+const nyc = new Location("New York", 40.7128, -74.006, "EST");
+const la = new Location("Los Angeles", 34.0522, -118.2437, "PST");
+
+const distance = Location.calculateDistance(nyc, la);
+console.log(distance > 2000); // Expected: true (distance in km)
+
+const miami = Location.fromCoordinates(25.7617, -80.1918, "Miami");
+console.log(miami.name); // Expected: "Miami"
+
+ const reading = new WeatherReading(1, "New York", 25, 60, 1013, 15);
+nyc.addReading(reading);
+ console.log(nyc.readings_array); // Expected: 1
+
+
+
