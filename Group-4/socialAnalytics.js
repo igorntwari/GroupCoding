@@ -67,15 +67,14 @@ class User {
   }
 }
 
-// ----------------- TEST CASES -----------------
 
 const user = new User(1, "john_doe", "john@example.com", 15000, 500);
 
-// Influencer test
-console.log(user.isInfluencer()); // true
 
-// Follower ratio test
-console.log(user.followerRatio); // 0.033...
+console.log(user.isInfluencer()); 
+
+
+console.log(user.followerRatio); 
 
 
 const post = new Post(1, 1, "Great day! #sunny #happy", Date.now(), 100, 20, [
@@ -103,4 +102,4 @@ const posts = [
   new Post(2, 1, "Workout time #fitness", Date.now(), 20, 5, []),
   new Post(3, 1, "Chilling #sunny vibes", Date.now(), 15, 3, []),
 ];
-console.log(Post.getPostsByHashtag(posts, "sunny").length); // 2
+console.log(Post.getPostsByHashtag(posts, "sunny").length); 
