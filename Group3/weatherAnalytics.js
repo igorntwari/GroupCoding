@@ -34,7 +34,8 @@ class WeatherReading {
       }
   }
   get windCategory(){
-    this.windSpeed > 10 ? "strong": "moderate"
+    // this.windSpeed > 10 ? "strong": "moderate"
+    return this.windSpeed > 10
   }
   isExtremeWeather = () =>{
     if(this.temperature < 50 && this.temperature > 20 && this.windSpeed < 10 && this.humidity > 50 && pressure > 100){
@@ -46,5 +47,7 @@ class WeatherReading {
 }
 
 
-const reading = new WeatherReading(1, "Kigali", 25, 60, 1012, 10);
-console.log(reading.toString())
+const reading = new WeatherReading(1, "Miami", 30, 80, 1013, 25);
+console.log(reading.comfortIndex); // Expected: number between 0-100
+console.log(reading.windCategory); // Expected: "moderate" or "strong"
+console.log(reading.isExtremeWeather()); // Expected: boolean
