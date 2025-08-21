@@ -1,5 +1,5 @@
 class Task{
-constructor(id,title,description,status="pending",priority="medium",createdAt){
+  constructor(id,title,description,status="pending",priority="medium",createdAt){
     this.id=id;
     this.title=title;
     this.description=description;
@@ -7,9 +7,23 @@ constructor(id,title,description,status="pending",priority="medium",createdAt){
     this.priority=priority;
     this.createdAt= new Date();
   }
+    getDescription(){
+    return `Task #${this.id}:${this.title}
+    Description: ${this.description}
+    Status:${this.status}
+    Priority:${this.priority}`
+  }
+  updateStatus(newStatus){
+    this.status =newStatus
+  }
+  getDaysOld(){
+   return new Date() - this.createdAt;
+  }
 
 }
+//Shami file 0-1
 
+//valens file 2
 class User{
     constructor(id,name,email,role){
         // super()
@@ -27,10 +41,4 @@ class User{
     }
 }
 
-let obj = new User(1, "valens","iradukunda@gmail.com","admin")
-let task = new Task(1, "Complete project", "Finish the final implementation")
-obj.assignTask(task)
-task = new Task(1, "Complete project", "Finish the final implementation","completed")
-obj.assignTask(task)
-
-console.log(obj.getTasksByStatus('pending'))
+//valens 2
