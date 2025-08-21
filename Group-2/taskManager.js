@@ -42,3 +42,43 @@ class User{
 }
 
 //valens 2
+ 
+// Masabo
+class TaskManager{
+    constructor(user,task){
+        this.user=[]
+        this.task =[];
+    }
+
+    addUser(users){
+        this.user.push(users)
+    }
+     addTask(task){
+        this.task.push(task)
+     }
+     getTasksByPriority(priority){
+        return this.task.filter(a=>a.priority== priority)
+    }
+    getCompletedTasksCount(){
+        return this.task.filter(a=>a.status== "completed").length
+    }
+    getAverageTaskAge(){
+        return this.task.map(elem=>{
+            return elem.getDaysOld(elem)
+        }).reduce((a,b)=>a+b)/this.task.length
+    }
+    
+}
+
+const manager = new TaskManager();
+const user = new User(1, "John", "john@example.com", "dev");
+const task1 = new Task(1, "Task 1", "Description 1", "completed", "high");
+const task2 = new Task(2, "Task 2", "Description 2", "pending", "high");
+
+manager.addUser(user);
+manager.addTask(task1);
+manager.addTask(task2);
+
+console.log(manager.getTasksByPriority("high").length); // Expected: 2
+console.log(manager.getCompletedTasksCount()); // Expected: 1
+console.log(manager.getAverageTaskAge()>0); // Expected: true
