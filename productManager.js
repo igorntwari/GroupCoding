@@ -24,7 +24,7 @@ class Product {
         }
         this._stock = val;
     }
-    
+
 
 }
 
