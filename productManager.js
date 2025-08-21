@@ -7,6 +7,28 @@ class Product {
         this.stock = stock;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static comparePrice(product1, product2) {
         if (product1.price === product2.price) {
             return `The Products price are equal`
@@ -18,5 +40,3 @@ class Product {
         return Math.floor(100000 + Math.random() * 900000);
     }
 }
-
-
