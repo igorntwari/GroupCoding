@@ -40,3 +40,27 @@ class Product {
     }
     
 }
+
+
+
+
+
+//Ellyse 's codes is here
+
+class ProductManager {
+  constructor() {
+    this.products = [];
+  }
+
+  addProduct(product) {
+    this.products.push(product);
+  }
+
+  findByCategory(category) {
+    return this.products.filter(p => p.category === category);
+  }
+
+  getTotalValue() {
+    return this.products.reduce((total, p) => total + (p.price * p.stock), 0);
+  }
+}
