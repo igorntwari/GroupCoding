@@ -1,4 +1,3 @@
-
 class SocialPlatform{
   constructor(users,posts,analytics){
     this.users = [];
