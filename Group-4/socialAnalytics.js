@@ -251,6 +251,50 @@ class SocialPlatform {
       options,
     };
   }
+   // STEP 6 CALEB
+  fetchUserData(userId){
+    return new Promise((resolve,reject)=>{
+      const user = this.users.find(u=>u.id===userId);
+      if(user){
+        resolve(user);
+      }else{
+        reject("No user found now");
+      }
+    });
+  }
+  publishPost(post){
+    return new Promise((resolve,reject)=>{
+      const user = this.users.find(u=>u.id===post.userId);
+      if(user){
+        user.addPost(post);
+        this.posts.push(post);
+        resolve(post);
+      }else{
+        reject(new Error("No user found"));
+      }
+    });
+  }
+  getAnalyticsData(timeframe){
+    return new Promise((resolve,reject)=>{
+      const data = {
+        userGrowth: AnalyticsEngine.getUserGrowthRate(this.users[0], timeframe),
+        postVirality: AnalyticsEngine.calculateViralityScore(this.posts[0])
+      };
+      resolve(data);
+    });
+  }
+  syncWithExternalAPI(){
+    return new Promise((resolve,reject)=>{
+      setTimeout(()=>{
+        const success = true; // Simulate success or failure
+        if(success){
+          resolve("The API promise resolved");
+        }else{
+          reject(new Error("Failed to fetch"));
+        }
+      },1000);
+    });
+  }
 }
 
 
