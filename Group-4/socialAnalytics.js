@@ -1,54 +1,92 @@
-class Post{
-    constructor(id, userId, content, timestamp, likes, shares,comments){
-        this.id=id;
-        this.userId=userId;
-        this.content=content;
-        this.timestamp=timestamp;
-        this.likes=likes;
-        this.shares=shares;
-        this.comments=comments;
+class Post {
+  constructor(id, userId, content, timestamp, likes, shares, comments) {
+    this.id = id;
+    this.userId = userId;
+    this.content = content;
+    this.timestamp = timestamp; 
+    
+    this.likes = likes;
+    this.shares = shares;
+    this.comments = comments;
+  }
 
 
-    }
+  get engagementRate() {
+    const totalInteractions = this.likes + this.shares + this.comments.length;
+    return totalInteractions / 100; 
+  }
 
-    toString(){
-        return `this post is for ${this.userId} : "${this.content}" at ${new Date(this.timestamp)}`;
-    }
 
-}
-class User{
-    constructor(id, username, email, followers, following, postsarray){
-        this.id=id;
-        this.username=username;
-        this.email=email;
-        this.followers=[];
-        this.following=[];
-        this.posts=[];
-        
-    }
-    addPost(content){
-        this.posts.push(content);
-        console.log(`${this.username} added a this post of "${this.content}"`);
-
-    }
+  static getPostsByHashtag(posts, hashtag) {
+    return posts.filter(post => post.content.includes(#${hashtag}));
+  }
 }
 
-// ---------------- TEST CASES ----------------
+class User {
+  constructor(id, username, email, followers, following, posts = []) {
+    this.id = id;
+    this._username = username; 
+    this.email = email;
+    this.followers = followers;
+    this.following = following;
+    this.posts = posts;
+  }
 
-const user1 = new User(1, "john_doe", "john@example.com", 15000, 500);
+  get followerRatio() {
+    if (this.followers === 0) return 0;
+    return this.following / this.followers;
+  }
 
-console.log(user1.isInfluencer()); // true
-console.log(user1.followerRatio);  // 0.033...
+  set username(newName) {
+    if (!/^[a-zA-Z0-9_]+$/.test(newName)) {
+      throw new Error("Invalid username. Use only letters, numbers, or underscore.");
+    }
+    this._username = newName;
+  }
 
-const post1 = new Post(1, 1, "Great day! #sunny #happy", Date.now(), 100, 20, [
+  get username() {
+    return this._username;
+  }
+
+
+  isInfluencer = () => this.followers > 10000;
+
+
+  addPost(content) {
+    const newPost = new Post(
+      this.posts.length + 1,
+      this.id,
+      content,
+      new Date(),
+      0,
+      0,
+      []
+    );
+    this.posts.push(newPost);
+    return newPost;
+  }
+}
+
+
+const user = new User(1, "john_doe", "john@example.com", 15000, 500);
+
+
+console.log(user.isInfluencer()); 
+
+
+console.log(user.followerRatio); 
+
+
+const post = new Post(1, 1, "Great day! #sunny #happy", Date.now(), 100, 20, [
   "Nice!",
   "Awesome",
 ]);
-console.log(post1.engagementRate > 0); // true
+console.log(post.engagementRate > 0); 
+
 
 try {
   user1.username = "invalid-name!";
-} catch (e) {
+} catch (event) {
   console.log("Username validation working");
 }
 
