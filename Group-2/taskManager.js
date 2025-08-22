@@ -66,8 +66,63 @@ class TaskManager{
         return this.task.map(elem=>{
             return elem.getDaysOld(elem)
         }).reduce((a,b)=>a+b)/this.task.length
+        // Masabo step3
+    }
+
+
+    // Masabo step 6
+     saveTask(task){
+  return new Promise((resolve,reject) =>{
+      setTimeout(() =>{
+      let done = true
+          if(done){
+              resolve({
+                  success:true,
+                  id:task.id,
+                 })
+          }else{
+              reject({
+                  success:false,
+                  message:"id not found"
+              })
+          }
+      },1000)
+  })
     }
     
+    loadTasksFromAPI(){
+        
+  return new Promise((resolve,reject) =>{
+      setTimeout(() =>{
+      let done = true
+          if(done){
+              resolve([
+              new Task(1, "Task 1", "Loaded from API"),
+            new Task(2, "Task 2", "Loaded from API", "completed")
+          ]);
+          }else{
+              reject("Not found")
+          }
+      },1200)
+  })  
+    }
+    validateTask(task){
+         
+  return new Promise((resolve,reject) =>{
+      setTimeout(() =>{
+      let done = true
+          if(done){
+              resolve(true)
+          }else{
+              reject(false)
+          }
+      },1400)
+  }) 
+    }
 }
+    
 
-// Masabo step3
+
+
+// Masabo step 6
+
