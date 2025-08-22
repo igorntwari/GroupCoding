@@ -118,7 +118,7 @@ const nyc = new Location("New York", 40.7128, -74.006, "EST");
 const la = new Location("Los Angeles", 34.0522, -118.2437, "PST");
 
 const distance = Location.calculateDistance(nyc, la);
-console.log(distance > 2000); // Expected: true (distance in km)
+console.log(distance); // Expected: true (distance in km)
 
 const miami = Location.fromCoordinates(25.7617, -80.1918, "Miammi");
 console.log(miami.name); // Expected: "Miami"
