@@ -174,3 +174,4 @@ class WeatherStation {
   }
 }
 
+console.log(nyc.readings_array);
