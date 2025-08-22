@@ -42,14 +42,13 @@ class Product {
 
 }
 
-
-
-
-
-
 class ProductManager {
   constructor() {
     this.products = [];
+        this.categoryMap = new Map();     
+        this.uniqueSuppliers = new Set();
+         this.supplierMap = new Map(); 
+       
   }
 
   addProduct(product) {
@@ -97,7 +96,7 @@ class ProductManager {
     async fetchProductData(id) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        const product = this.products.find(p => p.id === id);
+        const product = this.products.find(proi => proi.id === id);
         if (product) {
           resolve(product);
         } else {
@@ -122,5 +121,34 @@ class ProductManager {
     });
   }
 
+
+categoryMap (){
+  const map1 = new Map()
+  const set1 = new Set(this.products)
+  this.products.forEach(e=>{
+    map1.set(e.id,e.category)
+  })
+const uniqueSuppliers ={}
+set1.set(uniqueSuppliers)
+return set1
 }
+
+  addSupplier(productId, supplier) {
+   
+    this.uniqueSuppliers.add(supplier);
+
+    
+    if (!this.supplierMap.has(productId)) {
+      this.supplierMap.set(productId, new Set());
+    }
+    this.supplierMap.get(productId).add(supplier);
+  }
+
+
+
+
+
+}
+
+
 
