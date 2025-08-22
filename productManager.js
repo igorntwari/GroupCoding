@@ -104,12 +104,7 @@ class ProductManager {
     } catch (error) {
       console.error("Error in generateReport:", error.message);
       throw error;
-    }
-
-
-
-
-    
+    } 
   }
 
    async getTotalProducts() {
