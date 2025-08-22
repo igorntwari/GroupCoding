@@ -41,16 +41,12 @@ class Product {
   }
 
 }
-<<<<<<< HEAD
 
 
 
 
 
 
-
-=======
->>>>>>> a06a759c08b7337aa538ce18d3f7502dc420d56d
 class ProductManager {
   constructor() {
     this.products = [];
