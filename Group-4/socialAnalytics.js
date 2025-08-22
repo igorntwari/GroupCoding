@@ -1,3 +1,4 @@
+
 class Post {
   constructor(id, userId, content, timestamp, likes, shares, comments) {
     this.id = id;
@@ -140,3 +141,5 @@ console.log(Post.findTrendingHashtags(posts)); // ['#sunny', '#fitness']
 const user2 = new User(2, "user2", "user2@test.com", 500, 200);
 console.log(User.getUserGrowthRate(user1)); // simulate growth
 console.log(User.compareUsers(user1, user2));
+
+
