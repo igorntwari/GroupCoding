@@ -41,12 +41,6 @@ class Product {
     
 }
 
-
-
-
-
-//Ellyse 's codes is here
-
 class ProductManager {
   constructor() {
     this.products = [];
@@ -76,8 +70,74 @@ class ProductManager {
             category
         }));
     }
+   
+    async bulkUpdate(updates){
+        try{
+        for(let update of updates){
+            await this.updateProduct(update.id,update.data)
+        }
+        return "Bulk updated ";
+        }
+
+        catch(error){
+         
+              console.error("Error in bulkUpdate:", error.message);
+              throw error;
+        }
+        
+    }
+
+
+      async generateReport() {
+    try {
+      const totalProducts = await this.getTotalProducts();
+      const totalStock = await this.getTotalStock();
+      const categories = await this.getCategories();
+
+      return {
+        totalProducts,
+        totalStock,
+        categories,
+      };
+
+    
+    } catch (error) {
+      console.error("Error in generateReport:", error.message);
+      throw error;
+    }
 
 
 
 
+    
+  }
+
+   async getTotalProducts() {
+    return this.products.length;
+  }
+
+  async getTotalStock() {
+    return this.products.reduce((sum, p) => sum + p.stock, 0);
+  }
+
+  async getCategories() {
+    return [...new Set(this.products.map((p) => p.category))];
+  }
 }
+
+
+
+
+
+const manager = new ProductManager();
+manager.addProduct(new Product(1, "Laptop", 999.99, "Electronics", 5));
+
+(async () => {
+  try {
+    await manager.bulkUpdate([{ id: 1, stock: 10 }]);
+    const report = await manager.generateReport();
+    console.log(report.totalProducts); // Expected: 1
+  } catch (error) {
+    console.log(error.message);
+  }
+})();
