@@ -155,4 +155,9 @@ class WeatherStation {
 
 
 }
+const station = new WeatherStation();
 
+station.getHistoricalData("Miami", 30).then((historical) => {
+  console.log(historical.length); // Expected: 30
+  console.log(historical[0].hasOwnProperty("temperature")); // Expected: true
+});
