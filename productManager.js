@@ -39,6 +39,8 @@ class Product {
     static generateId() {
         return Math.floor(100000 + Math.random() * 900000);
     }
+
+   
     
 }
 
@@ -58,5 +60,38 @@ class ProductManager {
   getTotalValue() {
     return this.products.reduce((total, p) => total + (p.price * p.stock), 0);
   }
+   
+  
+ async fetchProductData(id) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const product = this.products.find(p => p.id === id);
+        if (product) {
+          resolve(product);
+        } else {
+          reject(new Error("Product you its now here men!!😂"));
+        }
+      }, 1000); 
+    });
+  }
+
+
+  saveToDatabase() {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+       
+        const success = Math.random()
+        if (success) {
+          resolve("Data saved Then Congs 👩‍💻👩‍💻 ");
+        } else {
+          reject(new Error("Fail to save 😭😭"));
+        }
+      }, 2000); 
+    });
+  }
 }
+
+
+
+
 
