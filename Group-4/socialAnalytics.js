@@ -172,3 +172,57 @@ class SocialPlatform{
   }
 }
 
+
+// --- Step 4: Destructuring and Spread in Analytics ---
+
+SocialPlatform.prototype.processUserData = function({ users, filters = {}, options = {} }) {
+  return users.filter(user => !filters.minFollowers || user.followers >= filters.minFollowers);
+};
+
+SocialPlatform.prototype.mergePlatformData = function(...platforms) {
+  const merged = new SocialPlatform();
+  platforms.forEach(platform => {
+    merged.users.push(...platform.users);
+    merged.posts.push(...platform.posts);
+  });
+  return merged;
+};
+
+SocialPlatform.prototype.createUserProfile = function(user) {
+  const { id, username, email, followers, following, posts } = user;
+  return { id, username, email, followers, following, posts, socialScore: followers * 0.1 };
+};
+
+SocialPlatform.prototype.updatePostMetrics = function(postId, metrics) {
+  const post = this.posts.find(p => p.id === postId);
+  if (post) Object.assign(post, { ...metrics });
+};
+
+// Test Case
+const platform = new SocialPlatform();
+const user = new User(1, "testuser", "test@test.com", 1000, 500);
+platform.addUsers(user);
+
+const processed = platform.processUserData({
+  users: [user],
+  filters: { minFollowers: 500 },
+  options: { includeInactive: false },
+});
+console.log(Array.isArray(processed)); // Expected: true
+
+const profile = platform.createUserProfile(user);
+console.log(profile.username); // Expected: "testuser"
+console.log(profile.hasOwnProperty("socialScore")); // Expected: true
+
+const postTest = new Post(1, 1, "Test", Date.now(), 10, 5, []);
+platform.addPosts(postTest);
+platform.updatePostMetrics(1, { likes: 50, shares: 15 });
+const updatedPost = platform.posts.find((p) => p.id === 1);
+console.log(updatedPost.likes); // Expected: 50
+
+
+
+
+
+
+
