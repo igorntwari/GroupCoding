@@ -180,6 +180,7 @@ class  AnalyticsEngine{
          return newObj;
       }
     } 
+    
     const post1 = new Post(
   1,
   1,
@@ -233,4 +234,71 @@ class SocialPlatform{
   finPostsByTimeframe(startTime,endTime){
     return this.posts.filter((post)=>post.timestamp>=startTime && post.timestamp<=endTime);
   }
+  // STEP 6 CALEB
+  fetchUserData(userId){
+    return new Promise((resolve,reject)=>{
+      const user = this.users.find(u=>u.id===userId);
+      if(user){
+        resolve(user);
+      }else{
+        reject("No user found now");
+      }
+    });
+  }
+  publishPost(post){
+    return new Promise((resolve,reject)=>{
+      const user = this.users.find(u=>u.id===post.userId);
+      if(user){
+        user.addPost(post);
+        this.posts.push(post);
+        resolve(post);
+      }else{
+        reject(new Error("No user found"));
+      }
+    });
+  }
+  getAnalyticsData(timeframe){
+    return new Promise((resolve,reject)=>{
+      const data = {
+        userGrowth: AnalyticsEngine.getUserGrowthRate(this.users[0], timeframe),
+        postVirality: AnalyticsEngine.calculateViralityScore(this.posts[0])
+      };
+      resolve(data);
+    });
+  }
+  syncWithExternalAPI(){
+    return new Promise((resolve,reject)=>{
+      setTimeout(()=>{
+        const success = true; // Simulate success or failure
+        if(success){
+          resolve("The API promise resolved");
+        }else{
+          reject(new Error("Failed to fetch"));
+        }
+      },1000);
+    });
+  }
 }
+
+// STEP 6 PROMISES
+const platform = new SocialPlatform();
+
+platform.fetchUserData(123).then((userData) => {
+  console.log(userData.hasOwnProperty("id")); // Expected: true
+  console.log(userData.hasOwnProperty("stats")); // Expected: true
+});
+
+const postis = new Post(1, 1, "Test post", Date.now(), 0, 0, []);
+platform.publishPost(postis).then((result) => {
+  console.log(result.success); // Expected: true
+  console.log(result.publishedAt > 0); // Expected: true
+});
+
+platform.getAnalyticsData("month").then((analytics) => {
+  console.log(analytics.hasOwnProperty("impressions")); // Expected: true
+  console.log(analytics.hasOwnProperty("reach")); // Expected: true
+});
+
+platform.syncWithExternalAPI().then((syncStatus) => {
+  console.log(syncStatus.synchronized); // Expected: true
+});
