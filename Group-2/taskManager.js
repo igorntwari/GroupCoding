@@ -66,6 +66,7 @@ class TaskManager{
         return this.task.map(elem=>{
             return elem.getDaysOld(elem)
         }).reduce((a,b)=>a+b)/this.task.length
+        // Masabo step3
     }
     
     // Valens step 4
@@ -99,6 +100,72 @@ class TaskManager{
     }
     //valens step 4
     
-}
+// }
 
-// Masabo step3
+    //shami 05
+    createTask(title = "Data", description ="Collectiong data", options = {}){
+        let {status="pending",priority = "medium"} = options
+        let task = new Task(1,title,description,status,priority)
+        this.task.push(task)
+        return task
+    }
+    generateReport(){
+        let task = this.task[0]
+        task.summary = "summary"
+        return task
+    }
+    //shami05
+
+        // Masabo step 6
+    saveTask(task){
+        return new Promise((resolve,reject) =>{
+      setTimeout(() =>{
+      let done = true
+          if(done){
+              resolve({
+                  success:true,
+                  id:task.id,
+                 })
+          }else{
+              reject({
+                  success:false,
+                  message:"id not found"
+              })
+          }
+      },1000)
+  })
+    }
+
+    loadTasksFromAPI(){
+        
+        return new Promise((resolve,reject) =>{
+            setTimeout(() =>{
+            let done = true
+                if(done){
+                    resolve([
+                    new Task(1, "Task 1", "Loaded from API"),
+                    new Task(2, "Task 2", "Loaded from API", "completed")
+                ]);
+                }else{
+                    reject("Not found")
+                }
+            },1200)
+        })  
+    }
+    validateTask(task){
+         
+        return new Promise((resolve,reject) =>{
+            setTimeout(() =>{
+            let done = true
+                if(done){
+                    resolve(true)
+                }else{
+                    reject(false)
+                }
+            },1400)
+        }) 
+    }
+}
+    
+// Masabo step 6
+
