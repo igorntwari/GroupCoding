@@ -169,11 +169,7 @@ class  AnalyticsEngine{
 
       }
       static compareUsers(user1, user2){
-        // if(user1 === user2){
-        //   return true;
-        // }else{
-        //   return false;
-        // }
+     
         const newObj = {}
          
          Object.assign(newObj, {...user1,followerDifference :"Caleb"},{...user2,followerDifference :"Caleb Mevis"});
@@ -186,7 +182,7 @@ class  AnalyticsEngine{
   "Viral content #trending",
   new Date(),
   1000,
-  500,
+  5000,
   []
 );
 // console.log(Post);
