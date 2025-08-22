@@ -107,65 +107,6 @@ class User {
   }
 }
 
-
-class AnalyticsEngine {
-  static calculateViralityScore(post) {
-    const { shares, comments, likes } = post;
-    return shares * 3 + (comments.length || 0) * 2 + likes * 1;
-  }
-
-  static findTrendingHashtags(posts) {
-    const hashtagMap = new Map();
-    posts.forEach((post) => {
-      const hashtags = post.content.match(/#\w+/g);
-      if (hashtags) {
-        hashtags.forEach((tag) => {
-          hashtagMap.set(tag, (hashtagMap.get(tag) || 0) + 1);
-        });
-      }
-    });
-    return Array.from(hashtagMap.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map((entry) => entry[0]);
-  }
-
-  static getUserGrowthRate(user, timeframe) {
-    const growth = user.followers * 0.1; 
-    return user.followers + growth;
-  }
-
-  static compareUsers(user1, user2) {
-    const newObj = {};
-    Object.assign(
-      newObj,
-      { ...user1, followerDifference: "Caleb" },
-      { ...user2, followerDifference: "Caleb Mevis" }
-    );
-    return newObj;
-  }
-
-}
-
-
-const firstPost = user1.addPost("Hello World! #FirstPost");
-console.log(user1.posts.length); // 1
-console.log(firstPost.content.includes("#FirstPost")); // true
-console.log(firstPost.timestamp > 0); // true
-
-
-const posts = [
-  new Post(1, 1, "Loving this #sunny day", Date.now(), 10, 2, []),
-  new Post(2, 1, "Workout time #fitness", Date.now(), 20, 5, []),
-  new Post(3, 1, "Chilling #sunny vibes", Date.now(), 15, 3, []),
-];
-
-console.log(Post.getPostsByHashtag(posts, "sunny").length); // 2
-console.log(Post.findTrendingHashtags(posts)); // ['#sunny', '#fitness']
-
-const user2 = new User(2, "user2", "user2@test.com", 500, 200);
-console.log(User.getUserGrowthRate(user1)); // simulate growth
-console.log(User.compareUsers(user1, user2));
-
 // STEP 2
 class  AnalyticsEngine{
 
@@ -210,22 +151,6 @@ class  AnalyticsEngine{
   5000,
   []
 );
-// console.log(Post);
-
-// TESTING RESULT
-
-const post2 = new Post(2, 1, "Normal post #daily", new Date(), 10, 2, []);
-
-const virality = AnalyticsEngine.calculateViralityScore(post1);
-console.log(virality > AnalyticsEngine.calculateViralityScore(post2)); // Expected: true
-
-const trending = AnalyticsEngine.findTrendingHashtags([post1, post2]);
-console.log(Array.isArray(trending)); // Expected: true
-console.log(trending.lenght >= 2); // Expected: true
-
-console.log(AnalyticsEngine.getUserGrowthRate(user1)); // simulate growth
-console.log(AnalyticsEngine.compareUsers(user1, user2));
-
 
 // --- Step 3 & Step 4 & Step 5: SocialPlatform ---
 class SocialPlatform {
@@ -341,7 +266,10 @@ class SocialPlatform {
       throw new Error("Failed to generate influencer report");
     }
   }
-
+async fetchUserData(userId) {
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  return { id: userId, username: `user_${userId}` };
+}
   async performDailyAnalytics() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -384,4 +312,337 @@ class SocialPlatform {
     }
   }
 }
+
+module.exports = {
+  Post,
+  User,
+  AnalyticsEngine,
+  SocialPlatform
+};
+
+
+SocialPlatform.prototype.analyzeByEngagement = function () {
+  const total =
+    this.posts.reduce(
+      (s, p) => s + p.likes + p.shares + (p.comments ? p.comments.length : 0),
+      0
+    ) || 0;
+  const averageEngagement = this.posts.length ? total / this.posts.length : 0;
+  return { totalEngagement: total, averageEngagement };
+};
+
+SocialPlatform.prototype.analyzeByVirality = function (threshold = 100) {
+  const scored = this.posts.map((p) => ({
+    post: p,
+    score: AnalyticsEngine.calculateViralityScore(p),
+  }));
+  const viralPosts = scored.filter((x) => x.score >= threshold).map((x) => x.post);
+  return { viralPosts, threshold };
+};
+
+SocialPlatform.prototype.generateReport = function (
+  timeframe = "week",
+  metrics = ["engagement", "growth"],
+  format = "summary"
+) {
+  const data = {
+    timeframe,
+    metrics,
+    format,
+    totals: {
+      users: this.users.length,
+      posts: this.posts.length,
+    },
+  };
+  return data;
+};
+
+
+SocialPlatform.prototype.createCampaign = function (name, budget = 1000, ...targetHashtags) {
+  const hashtags = targetHashtags.map((h) => (h.startsWith("#") ? h : `#${h}`));
+  const id = Math.floor(Math.random() * 1e6);
+  const key = `campaign_${id}`;
+  // enhanced object literal + computed property name
+  return {
+    id,
+    name,
+    budget,
+    hashtags,
+    [key]: true,
+  };
+};
+
+
+SocialPlatform.prototype.schedulePost = function (content, delay = 0, options = {}) {
+  return {
+    content,
+    delay,
+    options: { ...options },
+    scheduledAt: Date.now(),
+  };
+};
+
+
+
+const runSocialMediaAnalytics = async () => {
+  console.log("=== Social Media Analytics Platform Demo ===");
+
+  const platform = new SocialPlatform();
+
+  // Create diverse user base
+  const users = [
+    new User(1, "tech_guru", "guru@tech.com", 100000, 5000),
+    new User(2, "lifestyle_blogger", "blogger@life.com", 75000, 3000),
+    new User(3, "news_reporter", "news@media.com", 200000, 1000),
+    new User(4, "regular_user", "user@email.com", 500, 200),
+    new User(5, "rising_star", "star@social.com", 25000, 8000),
+  ];
+
+  // Add users to platform
+  users.forEach((user) => platform.addUser(user));
+
+  // Create sample posts with various engagement levels
+  const samplePosts = [
+    new Post(
+      1,
+      1,
+      "Breaking: New AI breakthrough! #AI #Technology #Innovation",
+      Date.now() - 3600000,
+      5000,
+      1200,
+      ["Amazing!", "Revolutionary", "Can't wait to try it"]
+    ),
+    new Post(
+      2,
+      2,
+      "My morning routine for productivity ☀️ #Lifestyle #Productivity #MorningRoutine",
+      Date.now() - 7200000,
+      2500,
+      800,
+      ["So helpful", "Trying this tomorrow"]
+    ),
+    new Post(
+      3,
+      3,
+      "BREAKING: Major policy changes announced #News #Politics #Update",
+      Date.now() - 1800000,
+      8000,
+      2000,
+      ["Important update", "Thanks for reporting"]
+    ),
+    new Post(
+      4,
+      4,
+      "Just had a great coffee ☕ #Coffee #Monday",
+      Date.now() - 900000,
+      15,
+      2,
+      ["Nice!"]
+    ),
+    new Post(
+      5,
+      5,
+      "New music video dropping soon! 🎵 #Music #ComingSoon #Excited",
+      Date.now() - 300000,
+      12000,
+      3500,
+      ["Can't wait!", "Your best work yet!"]
+    ),
+  ];
+
+  samplePosts.forEach((post) => platform.addPost(post));
+  console.log(
+    `✓ Platform initialized with ${users.length} users and ${samplePosts.length} posts`
+  );
+
+  // Test basic analytics
+  const topInfluencers = platform.getTopInfluencers(3);
+  console.log(
+    `✓ Top 3 influencers identified: ${topInfluencers
+      .map((u) => u.username)
+      .join(", ")}`
+  );
+
+  const engagementStats = platform.getEngagementStats();
+  console.log(
+    `✓ Platform engagement stats: ${engagementStats.totalEngagements} total engagements`
+  );
+
+  // Test static analytics methods
+  const viralPosts = samplePosts.filter(
+    (post) => AnalyticsEngine.calculateViralityScore(post) > 0.8
+  );
+  console.log(`✓ Found ${viralPosts.length} viral posts`);
+
+  const trendingHashtags = AnalyticsEngine.findTrendingHashtags(samplePosts);
+  console.log(
+    `✓ Trending hashtags: ${trendingHashtags
+      .slice(0, 3)
+      .map((h) => h.tag)
+      .join(", ")}`
+  );
+
+  // Test async operations
+  console.log("\n=== Testing Async Operations ===");
+
+  try {
+    // Fetch external user data
+    const userData = await platform.fetchUserData(999);
+    console.log(`✓ Fetched external user data for user ${userData.id}`);
+
+    // Generate influencer report
+    const influencerReport = await platform.generateInfluencerReport(1);
+    console.log(
+      `✓ Generated influencer report with ${influencerReport.engagement.totalPosts} posts analyzed`
+    );
+
+    // Perform daily analytics
+    const dailyAnalytics = await platform.performDailyAnalytics();
+    console.log(
+      `✓ Daily analytics completed: ${dailyAnalytics.topPosts.length} top posts identified`
+    );
+
+    // Batch process posts
+    const batchResult = await platform.batchProcessPosts(samplePosts);
+    console.log(`✓ Batch processed ${batchResult.processedCount} posts`);
+
+    // Content moderation
+    const moderationResult = await platform.moderateContent(samplePosts);
+    console.log(
+      `✓ Content moderation: ${moderationResult.approved.length} approved, ${moderationResult.flagged.length} flagged`
+    );
+  } catch (error) {
+    console.log(`✗ Async operation failed: ${error.message}`);
+  }
+
+  // Test Map/Set operations
+  console.log("\n=== Testing Social Network Features ===");
+
+  // Create follow relationships
+  platform.followUser(4, 1); // regular_user follows tech_guru
+  platform.followUser(4, 2); // regular_user follows lifestyle_blogger
+  platform.followUser(5, 1); // rising_star follows tech_guru
+  platform.followUser(1, 3); // tech_guru follows news_reporter
+
+  console.log(
+    `✓ Created ${platform.userConnections.size} user connection mappings`
+  );
+
+  // Track trending topics
+  platform.trackTrendingTopic("AI");
+  platform.trackTrendingTopic("Technology");
+  platform.trackTrendingTopic("Lifestyle");
+  platform.trackTrendingTopic("Music");
+  platform.trackTrendingTopic("News");
+
+  console.log(`✓ Tracking ${platform.trendingTopics.size} trending topics`);
+
+  const influenceNetwork = platform.getInfluenceNetwork(1);
+  console.log(
+    `✓ Tech guru's influence network: ${influenceNetwork.connections.length} connections, reach: ${influenceNetwork.reach}`
+  );
+
+  // Test iteration protocol
+  console.log("\n=== Testing Data Processing ===");
+
+  let totalEngagements = 0;
+  let postsProcessed = 0;
+
+// ITERATING IN PLATFORM
+
+  for (let post in platform.posts) {
+    postsProcessed++;
+    totalEngagements += platform.posts[post].likes + platform.posts[post].shares + platform.posts[post].comments.length;
+  }
+
+  console.log(`✓ Processed ${postsProcessed} posts via iteration`);
+  console.log(`✓ Total platform engagements: ${totalEngagements}`);
+
+  // Test dynamic analytics methods
+  const engagementAnalysis = platform.analyzeByEngagement();
+  console.log(
+    `✓ Engagement analysis: average ${engagementAnalysis.averageEngagement.toFixed(
+      2
+    )} per post`
+  );
+
+  const viralAnalysis = platform.analyzeByVirality();
+  console.log(
+    `✓ Virality analysis: ${viralAnalysis.viralPosts.length} posts above viral threshold`
+  );
+
+  // Test report generation
+  const weeklyReport = platform.generateReport("week", [
+    "engagement",
+    "growth",
+    "virality",
+  ]);
+  console.log(
+    `✓ Generated weekly report covering ${weeklyReport.metrics.length} metrics`
+  );
+
+  // Test campaign creation
+  const campaign = platform.createCampaign(
+    "Tech Innovation Campaign",
+    10000,
+    "AI",
+    "Technology",
+    "Innovation",
+    "Future"
+  );
+  console.log(
+    `✓ Created campaign "${campaign.name}" with ${campaign.hashtags.length} target hashtags`
+  );
+
+  // Test user comparison
+  const comparison = AnalyticsEngine.compareUsers(users[0], users[1]);
+  console.log(
+    `✓ User comparison: ${comparison.winner} has ${comparison.followerDifference} more followers`
+  );
+
+  // Test post scheduling
+  const scheduledPost = platform.schedulePost(
+    "Automated analytics report 📊 #Analytics #Data",
+    3600,
+    { priority: "high" }
+  );
+  console.log(`✓ Scheduled post with ${scheduledPost.delay}s delay`);
+
+  // Final platform statistics
+  console.log("\n=== Final Platform Statistics ===");
+  console.log(`Total Users: ${platform.users.length}`);
+  console.log(`Total Posts: ${platform.posts.length}`);
+  console.log(
+    `Total Connections: ${
+      Array.from(platform.userConnections.values()).flat().length
+    }`
+  );
+  console.log(
+    `Trending Topics: ${Array.from(platform.trendingTopics).join(", ")}`
+  );
+
+  const platformEngagement = platform.posts.reduce(
+    (sum, post) => sum + post.likes + post.shares + post.comments.length,
+    0
+  );
+  console.log(`Total Platform Engagement: ${platformEngagement}`);
+
+  const avgViralityScore =
+    platform.posts.reduce(
+      (sum, post) => sum + AnalyticsEngine.calculateViralityScore(post),
+      0
+    ) / platform.posts.length;
+  console.log(`Average Virality Score: ${avgViralityScore.toFixed(3)}`);
+
+  console.log("\n=== Social Media Analytics Demo Complete ===");
+  console.log(
+    "All ES6 features and social media functionality successfully demonstrated!"
+  );
+};
+
+// Run the complete demonstration
+runSocialMediaAnalytics();
+
+// Exports (uncomment when using as module)
+// module.exports = { Post, User, AnalyticsEngine, SocialPlatform };
 
