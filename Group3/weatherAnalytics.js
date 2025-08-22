@@ -114,7 +114,6 @@ class Location {
 
 }
 
-
 class WeatherStation {
   constructor() {
     this.locations = [];
