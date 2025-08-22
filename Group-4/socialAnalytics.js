@@ -1,4 +1,4 @@
-
+// ------------------ Step 1: Post Class ------------------
 class Post {
   constructor(id, userId, content, timestamp, likes, shares, comments) {
     this.id = id;
@@ -10,24 +10,19 @@ class Post {
     this.comments = comments || [];
   }
 
-  
   get engagementRate() {
     const totalInteractions = this.likes + this.shares + this.comments.length;
     return totalInteractions / 100;
   }
 
- 
   static getPostsByHashtag(posts, hashtag) {
     return posts.filter((post) => post.content.includes(`#${hashtag}`));
   }
 
- 
   static calculateViralityScore(post) {
-    const { shares, comments, likes } = post;
-    return shares * 3 + (comments.length || 0) * 2 + likes * 1;
+    return post.shares * 3 + (post.comments.length || 0) * 2 + post.likes;
   }
 
- 
   static findTrendingHashtags(posts) {
     const hashtagMap = new Map();
     posts.forEach((post) => {
@@ -44,7 +39,7 @@ class Post {
   }
 }
 
-
+// ------------------ Step 2: User Class ------------------
 class User {
   constructor(id, username, email, followers, following, posts = []) {
     this.id = id;
@@ -89,12 +84,10 @@ class User {
     return newPost;
   }
 
-  // simulate growth
   static getUserGrowthRate(user) {
     const growth = user.followers * 0.1;
     return user.followers + growth;
   }
-
 
   static compareUsers(user1, user2) {
     const newObj = {};
@@ -107,11 +100,10 @@ class User {
   }
 }
 
-
+// ------------------ Step 3: AnalyticsEngine ------------------
 class AnalyticsEngine {
   static calculateViralityScore(post) {
-    const { shares, comments, likes } = post;
-    return shares * 3 + (comments.length || 0) * 2 + likes * 1;
+    return post.shares * 3 + (post.comments.length || 0) * 2 + post.likes;
   }
 
   static findTrendingHashtags(posts) {
@@ -129,35 +121,33 @@ class AnalyticsEngine {
       .map((entry) => entry[0]);
   }
 
-  static getUserGrowthRate(user, timeframe) {
-    const growth = user.followers * 0.1; 
-    return user.followers + growth;
+  static getUserGrowthRate(user) {
+    return user.followers * 1.1;
   }
 
   static compareUsers(user1, user2) {
-    const newObj = {};
-    Object.assign(
-      newObj,
-      { ...user1, followerDifference: "Caleb" },
-      { ...user2, followerDifference: "Caleb Mevis" }
-    );
-    return newObj;
+    return { ...user1, ...user2 };
   }
-
 }
 
-// --- Step 3 & Step 4 & Step 5: SocialPlatform ---
+// ------------------ Step 4-9: SocialPlatform ------------------
+
+// Private Symbols for internal calculations
+const _calculateEngagement = Symbol("calculateEngagement");
+const _calculateVirality = Symbol("calculateVirality");
+
 class SocialPlatform {
-  constructor(users, posts, analytics) {
+  constructor() {
     this.users = [];
     this.posts = [];
     this.analytics = [];
 
-    // Step 8: Advanced Analytics
-    this.userConnections = new Map(); // Map<userId, array of followeeIds>
-    this.trendingTopics = new Set();  // Set of unique trending topics
+    this.userConnections = new Map(); // follower -> followees
+    this.trendingTopics = new Set();  // unique trending topics
+    this["viral_posts"] = [];         // computed property example
   }
 
+  // ---------- User & Post Methods ----------
   addUser(user) {
     this.users.push(user);
   }
@@ -166,42 +156,19 @@ class SocialPlatform {
     this.posts.push(post);
     const user = this.users.find((u) => u.id === post.userId);
     if (user) user.addPost(post);
-  }
 
-  getTopInfluencers(limit = 10) {
-    return [...this.users]
-      .sort((a, b) => b.followers - a.followers)
-      .slice(0, limit);
+    // Update computed property dynamically
+    if (post.likes + post.shares + post.comments.length > 100) {
+      this["viral_posts"].push(post);
+    }
   }
-
-  getEngagementStats() {
-    let totalUsers = this.users.length;
-    let avgFollowers =
-      this.users.reduce((sum, user) => sum + user.followers, 0) /
-      (totalUsers || 1);
-    let totalEngagements = this.posts.reduce(
-      (sum, post) => sum + post.engagementRate,
-      0
-    );
-    return { totalUsers, avgFollowers, totalEngagements };
-  }
-
-  findPostsByTimeframe(startTime, endTime) {
-    return this.posts.filter(
-      (post) => post.timestamp >= startTime && post.timestamp <= endTime
-    );
-  }
-
-  // ---------------- Map & Set Methods ----------------
 
   followUser(followerId, followeeId) {
     if (!this.userConnections.has(followerId)) {
       this.userConnections.set(followerId, []);
     }
     const followees = this.userConnections.get(followerId);
-    if (!followees.includes(followeeId)) {
-      followees.push(followeeId);
-    }
+    if (!followees.includes(followeeId)) followees.push(followeeId);
   }
 
   trackTrendingTopic(topic) {
@@ -210,97 +177,175 @@ class SocialPlatform {
 
   getInfluenceNetwork(userId) {
     const directConnections = this.userConnections.get(userId) || [];
-    let reach = new Set(directConnections); // immediate reach
+    let reach = new Set(directConnections);
 
-    // Include followers of followers for extended reach
     for (const followeeId of directConnections) {
       const followeeConnections = this.userConnections.get(followeeId) || [];
       followeeConnections.forEach((id) => reach.add(id));
     }
 
-    return {
-      connections: directConnections,
-      reach: reach.size
-    };
+    return { connections: directConnections, reach: reach.size };
   }
 
-  // ---------------- Async Methods from previous steps ----------------
+  // ---------- Async Methods ----------
   async batchProcessPosts(posts) {
-    try {
-      let processedCount = 0;
-      for (const post of posts) {
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        this.addPost(post);
-        processedCount++;
-      }
-      return { processedCount, success: true };
-    } catch (error) {
-      console.error("Error in batchProcessPosts:", error.message);
-      throw new Error("Failed to batch process posts");
+    let processedCount = 0;
+    for (const post of posts) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      this.addPost(post);
+      processedCount++;
     }
+    return { processedCount, success: true };
   }
 
   async generateInfluencerReport(userId) {
-    try {
-      const user = this.users.find((u) => u.id === userId);
-      if (!user) throw new Error("User not found");
+    const user = this.users.find((u) => u.id === userId);
+    if (!user) throw new Error("User not found");
 
-      await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
-      const userPosts = this.posts.filter((p) => p.userId === userId);
-      const engagement = userPosts.reduce(
-        (sum, p) => sum + p.engagementRate,
-        0
-      );
-      const reach = user.followers;
+    const userPosts = this.posts.filter((p) => p.userId === userId);
+    const engagement = userPosts.reduce(
+      (sum, p) => sum + this[_calculateEngagement](p),
+      0
+    );
+    const reach = user.followers;
 
-      return { user: user.username, engagement, reach, posts: userPosts.length };
-    } catch (error) {
-      console.error("Error in generateInfluencerReport:", error.message);
-      throw new Error("Failed to generate influencer report");
-    }
+    return { user: user.username, engagement, reach, posts: userPosts.length };
   }
 
   async performDailyAnalytics() {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
-      const stats = this.getEngagementStats();
-      const topInfluencers = this.getTopInfluencers(5);
-      const topPosts = [...this.posts]
-        .sort((a, b) => b.likes - a.likes)
-        .slice(0, 5);
+    const stats = this.getEngagementStats();
+    const topInfluencers = this.getTopInfluencers(5);
+    const topPosts = [...this.posts]
+      .sort((a, b) => b.likes - a.likes)
+      .slice(0, 5);
 
-      return { stats, topInfluencers, topPosts, generatedAt: new Date() };
-    } catch (error) {
-      console.error("Error in performDailyAnalytics:", error.message);
-      throw new Error("Failed to perform daily analytics");
-    }
+    return { stats, topInfluencers, topPosts, generatedAt: new Date() };
   }
 
   async moderateContent(posts) {
-    try {
-      const bannedWords = ["spam", "fake", "scam"];
-      const approved = [];
-      const rejected = [];
+    const bannedWords = ["spam", "fake", "scam"];
+    const approved = [];
+    const rejected = [];
 
-      for (const post of posts) {
-        await new Promise((resolve) => setTimeout(resolve, 30));
-        const isBanned = bannedWords.some((word) =>
-          post.content.toLowerCase().includes(word)
-        );
-        if (isBanned) {
-          rejected.push(post);
-        } else {
-          approved.push(post);
-        }
-      }
-
-      return { approved, rejected };
-    } catch (error) {
-      console.error("Error in moderateContent:", error.message);
-      throw new Error("Content moderation failed");
+    for (const post of posts) {
+      await new Promise((resolve) => setTimeout(resolve, 30));
+      const isBanned = bannedWords.some((word) =>
+        post.content.toLowerCase().includes(word)
+      );
+      if (isBanned) rejected.push(post);
+      else approved.push(post);
     }
+
+    return { approved, rejected };
+  }
+
+
+  [_calculateEngagement](post) {
+    return post.likes + post.shares + post.comments.length;
+  }
+
+  [_calculateVirality](post) {
+    return post.shares * 3 + post.comments.length * 2 + post.likes;
+  }
+
+
+  getEngagementStats() {
+    const totalUsers = this.users.length;
+    const avgFollowers =
+      this.users.reduce((sum, u) => sum + u.followers, 0) / (totalUsers || 1);
+    const totalEngagements = this.posts.reduce(
+      (sum, post) => sum + this[_calculateEngagement](post),
+      0
+    );
+    return { totalUsers, avgFollowers, totalEngagements };
+  }
+
+  getTopInfluencers(limit = 10) {
+    return [...this.users]
+      .sort((a, b) => b.followers - a.followers)
+      .slice(0, limit);
+  }
+
+ 
+  [Symbol.iterator]() {
+    let index = 0;
+    const posts = this.posts;
+    return {
+      next() {
+        if (index < posts.length) {
+          return { value: posts[index++], done: false };
+        } else return { done: true };
+      },
+    };
+  }
+
+  
+  ["analyzeByEngagement"]() {
+    const total = this.posts.reduce(
+      (sum, post) => sum + this[_calculateEngagement](post),
+      0
+    );
+    const avg = total / (this.posts.length || 1);
+    return { totalEngagement: total, averageEngagement: avg };
   }
 }
 
+
+const platform = new SocialPlatform();
+
+
+const user1 = new User(1, "Alice", "alice@mail.com", 1200, 300);
+const user2 = new User(2, "Bob", "bob@mail.com", 800, 150);
+const user3 = new User(3, "Charlie", "charlie@mail.com", 1500, 500);
+
+platform.addUser(user1);
+platform.addUser(user2);
+platform.addUser(user3);
+
+
+const posts = [
+  new Post(1, 1, "Post 1 #fun", Date.now(), 100, 20, []),
+  new Post(2, 2, "Post 2 #fun #news", Date.now(), 200, 40, []),
+  new Post(3, 3, "Post 3 #news", Date.now(), 150, 30, []),
+];
+
+posts.forEach((post) => platform.addPost(post));
+
+
+let count = 0;
+let totalLikes = 0;
+for (let post of platform) {
+  count++;
+  totalLikes += post.likes;
+}
+console.log("Iterator test: ", count, totalLikes); 
+
+
+const analyticsType = "Engagement";
+const dynamicMethod = "analyzeBy" + analyticsType;
+if (typeof platform[dynamicMethod] === "function") {
+  const analysis = platform[dynamicMethod]();
+  console.log("Dynamic method test:", analysis.hasOwnProperty("averageEngagement")); // true
+}
+
+
+const symbols = Object.getOwnPropertySymbols(platform);
+console.log("Symbol test:", symbols.length > 0);
+
+
+const metricName = "viral_posts";
+const computedResult = platform[metricName];
+console.log("Computed property test:", computedResult !== undefined);
+
+
+console.log("Engagement Stats:", platform.getEngagementStats());
+
+
+console.log(
+  "Top Influencers:",
+  platform.getTopInfluencers().map((u) => u.username)
+);
