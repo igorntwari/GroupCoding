@@ -77,7 +77,7 @@ console.log(post1.engagementRate > 0); // true
 
 try {
   user1.username = "invalid-name!";
-} catch (e) {
+} catch (event) {
   console.log("Username validation working");
 }
 
