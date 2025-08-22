@@ -125,19 +125,3 @@ class ProductManager {
   }
 }
 
-
-
-
-
-const manager = new ProductManager();
-manager.addProduct(new Product(1, "Laptop", 999.99, "Electronics", 5));
-
-(async () => {
-  try {
-    await manager.bulkUpdate([{ id: 1, stock: 10 }]);
-    const report = await manager.generateReport();
-    console.log(report.totalProducts); // Expected: 1
-  } catch (error) {
-    console.log(error.message);
-  }
-})();
