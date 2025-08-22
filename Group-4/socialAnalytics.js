@@ -152,16 +152,20 @@ class SocialPlatform {
     this.users = [];
     this.posts = [];
     this.analytics = [];
+
+    // Step 8: Advanced Analytics
+    this.userConnections = new Map(); // Map<userId, array of followeeIds>
+    this.trendingTopics = new Set();  // Set of unique trending topics
   }
 
-  addUsers(user) {
+  addUser(user) {
     this.users.push(user);
   }
 
-  addPosts(post) {
+  addPost(post) {
     this.posts.push(post);
     const user = this.users.find((u) => u.id === post.userId);
-    if (user) user.addPost(post.content);
+    if (user) user.addPost(post);
   }
 
   getTopInfluencers(limit = 10) {
@@ -170,133 +174,57 @@ class SocialPlatform {
       .slice(0, limit);
   }
 
-  getEngangmentStats() {
+  getEngagementStats() {
     let totalUsers = this.users.length;
     let avgFollowers =
       this.users.reduce((sum, user) => sum + user.followers, 0) /
       (totalUsers || 1);
-    let totalEngangments = this.posts.reduce(
+    let totalEngagements = this.posts.reduce(
       (sum, post) => sum + post.engagementRate,
       0
     );
-    return { totalUsers, avgFollowers, totalEngangments };
+    return { totalUsers, avgFollowers, totalEngagements };
   }
 
-  finPostsByTimeframe(startTime, endTime) {
+  findPostsByTimeframe(startTime, endTime) {
     return this.posts.filter(
       (post) => post.timestamp >= startTime && post.timestamp <= endTime
     );
   }
 
-  // --- Step 4 ---
-  processUserData({ users, filters = {}, options = {} }) {
-    return users.filter(
-      (user) => !filters.minFollowers || user.followers >= filters.minFollowers
-    );
+  // ---------------- Map & Set Methods ----------------
+
+  followUser(followerId, followeeId) {
+    if (!this.userConnections.has(followerId)) {
+      this.userConnections.set(followerId, []);
+    }
+    const followees = this.userConnections.get(followerId);
+    if (!followees.includes(followeeId)) {
+      followees.push(followeeId);
+    }
   }
 
-  mergePlatformData(...platforms) {
-    const merged = new SocialPlatform();
-    platforms.forEach((platform) => {
-      merged.users.push(...platform.users);
-      merged.posts.push(...platform.posts);
-    });
-    return merged;
+  trackTrendingTopic(topic) {
+    this.trendingTopics.add(topic);
   }
 
-  createUserProfile(user) {
-    const { id, username, email, followers, following, posts } = user;
+  getInfluenceNetwork(userId) {
+    const directConnections = this.userConnections.get(userId) || [];
+    let reach = new Set(directConnections); // immediate reach
+
+    // Include followers of followers for extended reach
+    for (const followeeId of directConnections) {
+      const followeeConnections = this.userConnections.get(followeeId) || [];
+      followeeConnections.forEach((id) => reach.add(id));
+    }
+
     return {
-      id,
-      username,
-      email,
-      followers,
-      following,
-      posts,
-      socialScore: followers * 0.1,
+      connections: directConnections,
+      reach: reach.size
     };
   }
 
-  updatePostMetrics(postId, metrics) {
-    const post = this.posts.find((p) => p.id === postId);
-    if (post) Object.assign(post, { ...metrics });
-  }
-
-  // --- Step 5: Default Parameters & Enhanced Objects ---
-  generateReport(
-    timeframe = "week",
-    metrics = ["engagement", "growth"],
-    format = "summary"
-  ) {
-    const key = `report_${timeframe}`;
-    return {
-      timeframe,
-      metrics,
-      format,
-      [key]: true,
-    };
-  }
-
-  createCampaign(name, budget = 1000, ...targetHashtags) {
-    return {
-      name,
-      budget,
-      hashtags: targetHashtags,
-    };
-  }
-
-  schedulePost(content, delay = 0, options = {}) {
-    return {
-      content,
-      delay,
-      options,
-    };
-  }
-   // STEP 6 CALEB
-  fetchUserData(userId){
-    return new Promise((resolve,reject)=>{
-      const user = this.users.find(u=>u.id===userId);
-      if(user){
-        resolve(user);
-      }else{
-        reject("No user found now");
-      }
-    });
-  }
-  publishPost(post){
-    return new Promise((resolve,reject)=>{
-      const user = this.users.find(u=>u.id===post.userId);
-      if(user){
-        user.addPost(post);
-        this.posts.push(post);
-        resolve(post);
-      }else{
-        reject(new Error("No user found"));
-      }
-    });
-  }
-  getAnalyticsData(timeframe){
-    return new Promise((resolve,reject)=>{
-      const data = {
-        userGrowth: AnalyticsEngine.getUserGrowthRate(this.users[0], timeframe),
-        postVirality: AnalyticsEngine.calculateViralityScore(this.posts[0])
-      };
-      resolve(data);
-    });
-  }
-  syncWithExternalAPI(){
-    return new Promise((resolve,reject)=>{
-      setTimeout(()=>{
-        const success = true; // Simulate success or failure
-        if(success){
-          resolve("The API promise resolved");
-        }else{
-          reject(new Error("Failed to fetch"));
-        }
-      },1000);
-    });
-  }
-
+  // ---------------- Async Methods from previous steps ----------------
   async batchProcessPosts(posts) {
     try {
       let processedCount = 0;
@@ -317,7 +245,7 @@ class SocialPlatform {
       const user = this.users.find((u) => u.id === userId);
       if (!user) throw new Error("User not found");
 
-      await new Promise((resolve) => setTimeout(resolve, 50)); 
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       const userPosts = this.posts.filter((p) => p.userId === userId);
       const engagement = userPosts.reduce(
@@ -335,7 +263,7 @@ class SocialPlatform {
 
   async performDailyAnalytics() {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 100)); 
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const stats = this.getEngagementStats();
       const topInfluencers = this.getTopInfluencers(5);
@@ -357,7 +285,7 @@ class SocialPlatform {
       const rejected = [];
 
       for (const post of posts) {
-        await new Promise((resolve) => setTimeout(resolve, 30)); 
+        await new Promise((resolve) => setTimeout(resolve, 30));
         const isBanned = bannedWords.some((word) =>
           post.content.toLowerCase().includes(word)
         );
@@ -375,7 +303,4 @@ class SocialPlatform {
     }
   }
 }
-
-
-
 
