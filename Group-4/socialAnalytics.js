@@ -143,6 +143,7 @@ class AnalyticsEngine {
     );
     return newObj;
   }
+
 }
 
 // --- Step 3 & Step 4 & Step 5: SocialPlatform ---
@@ -295,77 +296,86 @@ class SocialPlatform {
       },1000);
     });
   }
+
+  async batchProcessPosts(posts) {
+    try {
+      let processedCount = 0;
+      for (const post of posts) {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        this.addPost(post);
+        processedCount++;
+      }
+      return { processedCount, success: true };
+    } catch (error) {
+      console.error("Error in batchProcessPosts:", error.message);
+      throw new Error("Failed to batch process posts");
+    }
+  }
+
+  async generateInfluencerReport(userId) {
+    try {
+      const user = this.users.find((u) => u.id === userId);
+      if (!user) throw new Error("User not found");
+
+      await new Promise((resolve) => setTimeout(resolve, 50)); 
+
+      const userPosts = this.posts.filter((p) => p.userId === userId);
+      const engagement = userPosts.reduce(
+        (sum, p) => sum + p.engagementRate,
+        0
+      );
+      const reach = user.followers;
+
+      return { user: user.username, engagement, reach, posts: userPosts.length };
+    } catch (error) {
+      console.error("Error in generateInfluencerReport:", error.message);
+      throw new Error("Failed to generate influencer report");
+    }
+  }
+
+  async performDailyAnalytics() {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 100)); 
+
+      const stats = this.getEngagementStats();
+      const topInfluencers = this.getTopInfluencers(5);
+      const topPosts = [...this.posts]
+        .sort((a, b) => b.likes - a.likes)
+        .slice(0, 5);
+
+      return { stats, topInfluencers, topPosts, generatedAt: new Date() };
+    } catch (error) {
+      console.error("Error in performDailyAnalytics:", error.message);
+      throw new Error("Failed to perform daily analytics");
+    }
+  }
+
+  async moderateContent(posts) {
+    try {
+      const bannedWords = ["spam", "fake", "scam"];
+      const approved = [];
+      const rejected = [];
+
+      for (const post of posts) {
+        await new Promise((resolve) => setTimeout(resolve, 30)); 
+        const isBanned = bannedWords.some((word) =>
+          post.content.toLowerCase().includes(word)
+        );
+        if (isBanned) {
+          rejected.push(post);
+        } else {
+          approved.push(post);
+        }
+      }
+
+      return { approved, rejected };
+    } catch (error) {
+      console.error("Error in moderateContent:", error.message);
+      throw new Error("Content moderation failed");
+    }
+  }
 }
 
 
 
-const user1 = new User(1, "john_doe", "john@example.com", 15000, 500);
-console.log(user1.isInfluencer()); 
-console.log(user1.followerRatio); 
 
-const post = new Post(1, 1, "Great day! #sunny #happy", Date.now(), 100, 20, [
-  "Nice!",
-  "Awesome",
-]);
-console.log(post.engagementRate > 0); 
-
-try {
-  user1.username = "invalid-name!";
-} catch (error) {
-  console.log("Username validation working"); 
-}
-
-const firstPost = user1.addPost("Hello World! #FirstPost");
-console.log(user1.posts.length); // 1
-console.log(firstPost.content.includes("#FirstPost")); 
-
-const posts = [
-  new Post(1, 1, "Loving this #sunny day", Date.now(), 10, 2, []),
-  new Post(2, 1, "Workout time #fitness", Date.now(), 20, 5, []),
-  new Post(3, 1, "Chilling #sunny vibes", Date.now(), 15, 3, []),
-];
-console.log(Post.getPostsByHashtag(posts, "sunny").length); // 2
-console.log(Post.findTrendingHashtags(posts)); 
-
-const post1 = new Post(1, 1, "Viral content #trending", new Date(), 1000, 500, []);
-const post2 = new Post(2, 1, "Normal post #daily", new Date(), 10, 2, []);
-
-const virality = AnalyticsEngine.calculateViralityScore(post1);
-console.log(virality > AnalyticsEngine.calculateViralityScore(post2)); // Expected: true
-
-const trending = AnalyticsEngine.findTrendingHashtags([post1, post2]);
-console.log(Array.isArray(trending)); // Expected: true
-console.log(trending.lenght >= 2); // Expected: true
-
-console.log(AnalyticsEngine.getUserGrowthRate(user1)); // simulate growth
-console.log(AnalyticsEngine.compareUsers(user1, user2));
-
-class SocialPlatform{
-  constructor(users,posts,analytics){
-    this.users = [];
-    this.posts =[];
-    this.analytics =[];
-  }
-  addUsers(user){
-    this.users.push(user);
-  }
-
-  addPosts(post){
-    this.posts.push(post);
-    const user = this.users.find(u=>u.id===post.userId);
-    if(user)user.addPost(post);
-  }
-
-  getTopInfluencers (limit =10){
-    return [...this.users].sort((a,b)=>b.followers-a.followers).slice(0,limit);
-  }
-  getEngangmentStats(){
-    let totalUsers = this.users.length;
-    let avgFollowers = this.users.reduce((sum,user)=>sum+user.followers,0)/(totalUsers||1);
-    let totalEngangments = this.posts.reduce((sum,post)=>sum+post.engangmentRate,0);
-    return{totalUsers,avgFollowers,totalEngangments}
-  }
-  finPostsByTimeframe(startTime,endTime){
-    return this.posts.filter((post)=>post.timestamp>=startTime && post.timestamp<=endTime);
-  }
-}
