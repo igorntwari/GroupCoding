@@ -63,4 +63,21 @@ class ProductManager {
   getTotalValue() {
     return this.products.reduce((total, p) => total + (p.price * p.stock), 0);
   }
+    updateProduct({ id, updates }) {
+        this.products = this.products.map(elm =>
+            elm.id === id ? {...elm, ...updates } : elm
+        );
+    }
+
+    getProductSummary() {
+        return this.products.map(({ name, _price, category }) => ({
+            name,
+            _price,
+            category
+        }));
+    }
+
+
+
+
 }
