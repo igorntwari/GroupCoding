@@ -67,7 +67,20 @@ class TaskManager{
             return elem.getDaysOld(elem)
         }).reduce((a,b)=>a+b)/this.task.length
     }
-    
+    //shami 05
+    createTask(title = "Data", description ="Collectiong data", options = {}){
+        let {status="pending",priority = "medium"} = options
+        let task = new Task(1,title,description,status,priority)
+        this.task.push(task)
+        return task
+    }
+    generateReport(){
+        let task = this.task[0]
+        task.summary = "summary"
+        return task
+    }
 }
 
+ //shami 05
+ 
 // Masabo step3
