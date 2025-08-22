@@ -46,8 +46,26 @@ class WeatherReading {
   }
 }
 
+class WeatherStation{
+    generateForecast(days = 7, model = "simple", options = {}){
+    
+  }
+  createAlert(type, severity = "medium", ...conditions){
+    return this.type = type
+  }
+  etStatistics(period = "week", metrics = ["temperature", "humidity"]){
 
-const reading = new WeatherReading(1, "Miami", 30, 80, 1013, 25);
-console.log(reading.comfortIndex); // Expected: number between 0-100
-console.log(reading.windCategory); // Expected: "moderate" or "strong"
-console.log(reading.isExtremeWeather()); // Expected: boolean
+  }
+}
+const station = new WeatherStation();
+const alert = station.createAlert(
+  "temperature",
+  "high",
+  "heat wave",
+  "drought"
+);
+
+
+const stats = station.getStatistics();
+console.log(stats.hasOwnProperty("temperature")); // Expected: true
+
