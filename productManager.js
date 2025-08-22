@@ -1,46 +1,47 @@
 
 class Product {
-    constructor(id, name, price, category, stock) {
-        this.name = name;
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.category = category;
-        this.stock = stock;
-    }
+  constructor(id, name, price, category, stock) {
+    this.name = name;
+    this.id = id;
+    this.name = name;
+    this.price = price;
+    this.category = category;
+    this.stock = stock;
+  }
 
 
-    getInfo = function () {
-        return `Product: ${this.name} (ID: ${this.id}) - $${this.price} - Category: ${this.category}`
+  getInfo = function () {
+    return `Product: ${this.name} (ID: ${this.id}) - $${this.price} - Category: ${this.category}`
+  }
+  get isAvailable() {
+    return this.stock > 0 ? true : false;
+  }
+  set price(value) {
+    if (value <= 0) {
+      throw new Error("Price can't be below zero");
     }
-    get isAvailable() {
-        return this.stock > 0 ? true : false;
+    this._price = value;
+  }
+  set stock(val) {
+    if (val < 0) {
+      throw new Error("stock have always to be positive")
     }
-    set price(value) {
-        if (value <= 0) {
-            throw new Error("Price can't be below zero");
-        }
-        this._price = value;
-    }
-    set stock(val) {
-        if (val < 0) {
-            throw new Error ("stock have always to be positive")
-        }
-        this._stock = val;
-    }
+    this._stock = val;
+  }
 
-      static comparePrice(product1, product2) {
-        if (product1.price === product2.price) {
-            return `The Products price are equal`
-        }
-        return product1.price > product2.price ? product2 : product1;
+  static comparePrice(product1, product2) {
+    if (product1.price === product2.price) {
+      return `The Products price are equal`
     }
+    return product1.price > product2.price ? product2 : product1;
+  }
 
-    static generateId() {
-        return Math.floor(100000 + Math.random() * 900000);
-    }
-    
+  static generateId() {
+    return Math.floor(100000 + Math.random() * 900000);
+  }
+
 }
+<<<<<<< HEAD
 
 
 
@@ -48,6 +49,8 @@ class Product {
 
 
 
+=======
+>>>>>>> a06a759c08b7337aa538ce18d3f7502dc420d56d
 class ProductManager {
   constructor() {
     this.products = [];
@@ -64,22 +67,64 @@ class ProductManager {
   getTotalValue() {
     return this.products.reduce((total, p) => total + (p.price * p.stock), 0);
   }
-    updateProduct({ id, updates }) {
-        this.products = this.products.map(elm =>
-            elm.id === id ? {...elm, ...updates } : elm
-        );
-    }
+  updateProduct({ id, updates }) {
+    this.products = this.products.map(elm =>
+      elm.id === id ? { ...elm, ...updates } : elm
+    );
+  }
 
-    getProductSummary() {
-        return this.products.map(({ name, _price, category }) => ({
-            name,
-            _price,
-            category
-        }));
-    }
+  getProductSummary() {
+    return this.products.map(({ name, _price, category }) => ({
+      name,
+      _price,
+      category
+    }));
+  }
+  searchProduct(...values) {
+    return this.products.map(ele => values.filter(elem => ele.name.includes(elem))).filter(element => element.length > 0);
+  }
+  createBulkDiscount(percentage, ...productIds) {
+    let results = []
+    let getProducts = this.products.map(ele => productIds.filter(el => ele.id === el)).filter(ok => ok.length > 0).flat(Infinity);
+    this.products.forEach(e => {
+      for (let id of getProducts) {
+        if (e.id === id) {
+          e._price = e._price - (e._price * percentage) / 100;
+          results.push(e._price)
+        }
+      }
+    })
+    return results;
+  };
 
 
+    async fetchProductData(id) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const product = this.products.find(p => p.id === id);
+        if (product) {
+          resolve(product);
+        } else {
+          reject(new Error("Product you its now here men!!😂"));
+        }
+      }, 1000);
+    });
+  }
 
+
+  saveToDatabase() {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+
+        const success = Math.random()
+        if (success) {
+          resolve("Data saved Then Congs 👩‍💻👩‍💻 ");
+        } else {
+          reject(new Error("Fail to save 😭😭"));
+        }
+      }, 2000);
+    });
+  }
 
 }
 
