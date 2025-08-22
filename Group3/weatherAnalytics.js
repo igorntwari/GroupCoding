@@ -111,6 +111,71 @@ class WeatherStation {
     return Math.round(allReadings.reduce((sum, r) => sum + r.temperature, 0) / allReadings.length)
   }
 
+
+  //task 6 promise data fetching
+
+  fetchWeatherData(location) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+
+        resolve({
+          location,
+          readings: [
+            { temp: 25, humidity: 60, time: "10:00 AM" }
+
+          ]
+        })
+
+      }, 1000);
+
+    })
+
+  }
+
+  // method save to cloud
+
+  saveToCloud(data) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        let success = true;
+        if (success) resolve({
+          success: true,
+          cloudId: "abc123",  // mock cloud ID
+          data: data
+        })
+        else reject('data failed')
+      }, 3000);
+    })
+  }
+
+  //method get historical data
+
+  getHistoricalData(location, days) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        let historical = [];
+
+        for (let i = 0; i < days; i++) {
+          historical.push({
+            day: `Day ${i + 1}`,
+            temperature: Math.floor(Math.random() * 10) + 20,   // 20–29°C
+            humidity: Math.floor(Math.random() * 50) + 30        // 30–79%
+          });
+        }
+
+        resolve(
+          historical
+        );
+      }, 4000);
+    });
+  }
+
+  //
+
+
+
+
+
   findHottestLocation() {
     if (this.locations.length === 0) return null
     return this.locations.reduce((hottest, loc) => {
