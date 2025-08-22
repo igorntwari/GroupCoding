@@ -63,4 +63,29 @@ class ProductManager {
   getTotalValue() {
     return this.products.reduce((total, p) => total + (p.price * p.stock), 0);
   }
+
+
+updateProduct({id,updates}){
+  
+  this.products = this.products.map( elm => {
+    if(elm.id === id){
+        return { ...elm, updates}
+    }
+
+    return elm
+  })   
 }
+getProductSummary(){
+
+        const allProd = [...this.products];
+       return allProd.map(({ name, _price, category }) => ({name,_price,category
+    }));
+ }
+}
+const manager = new ProductManager();
+manager.addProduct(new Product(1, "Laptop", 999.99, "Electronics", 5));
+manager.updateProduct(1, { _price: 899.99, stock: 10 });
+const summary = manager.getProductSummary();
+console.log(summary[0]); // Expected: { name: "Laptop", price: 899.99, category: "Electronics" }
+
+
