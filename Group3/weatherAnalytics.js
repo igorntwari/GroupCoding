@@ -114,21 +114,6 @@ class Location {
 
 }
 
-const nyc = new Location("New York", 40.7128, -74.006, "EST");
-const la = new Location("Los Angeles", 34.0522, -118.2437, "PST");
-
-const distance = Location.calculateDistance(nyc, la);
-console.log(distance); // Expected: true (distance in km)
-
-const miami = Location.fromCoordinates(25.7617, -80.1918, "Miammi");
-console.log(miami.name); // Expected: "Miami"
-
- const reading = new WeatherReading(1, "New York", 25, 60, 1013, 15);
-nyc.addReading(reading);
- console.log(nyc.readings_array); // Expected: 1
-
-
-
 class WeatherStation {
   constructor() {
     this.locations = [];
@@ -164,14 +149,23 @@ class WeatherStation {
     const allReadings = this.locations.map((loc) => loc.readings);
     return allReadings.filter((r) => r.timestamp >= startDate && r.timestamp <= endDate);
   }
+  generateForecast(days = 7, model = "simple", options = {}){
+    return [days,model,options]
+  }
+  createAlert(type = 'none', severity = "medium", ...conditions){
+    return{
+      type,
+      severity,
+      conditions
+    }
+  }
+  getStatistics(period = "week", metrics = ["temperature", "humidity"]){
+    return{
+      temperature:metrics[0],
+      humidity:metrics[1]
+
+    }
+  }
 }
-const station = new WeatherStation();
-const reading1 = new WeatherReading(1, "New York", 25, 60, 1013, 15);
-const reading2 = new WeatherReading(2, "New York", 30, 65, 1015, 10);
 
-nyc.addReading(reading1);
-nyc.addReading(reading2);
-station.addLocation(nyc);
 
-console.log(station.getAverageTemperature()); // Expected: 27.5
-console.log(station.findHottestLocation().name); // Expected: "New York"
