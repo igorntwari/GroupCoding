@@ -114,9 +114,6 @@ class Location {
 
 }
 
-
-
-
 class WeatherStation {
   constructor() {
     this.locations = [];
@@ -152,12 +149,22 @@ class WeatherStation {
     const allReadings = this.locations.map((loc) => loc.readings);
     return allReadings.filter((r) => r.timestamp >= startDate && r.timestamp <= endDate);
   }
+  generateForecast(days = 7, model = "simple", options = {}){
+    return [days,model,options]
+  }
+  createAlert(type = 'none', severity = "medium", ...conditions){
+    return{
+      type,
+      severity,
+      conditions
+    }
+  }
+  getStatistics(period = "week", metrics = ["temperature", "humidity"]){
+    return{
+      temperature:metrics[0],
+      humidity:metrics[1]
 
-
+    }
+  }
 }
-const station = new WeatherStation();
 
-station.getHistoricalData("Miami", 30).then((historical) => {
-  console.log(historical.length); // Expected: 30
-  console.log(historical[0].hasOwnProperty("temperature")); // Expected: true
-});
