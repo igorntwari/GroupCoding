@@ -1,3 +1,4 @@
+
 class Post {
   constructor(id, userId, content, timestamp, likes, shares, comments) {
     this.id = id;
@@ -9,39 +10,40 @@ class Post {
     this.comments = comments || [];
   }
 
-  // engagement rate (toy formula)
+  
   get engagementRate() {
     const totalInteractions = this.likes + this.shares + this.comments.length;
     return totalInteractions / 100;
   }
 
-  // find posts with hashtag
+ 
   static getPostsByHashtag(posts, hashtag) {
-    return posts.filter(post => post.content.includes(`#${hashtag}`));
+    return posts.filter((post) => post.content.includes(`#${hashtag}`));
   }
 
-  // calculate virality
+ 
   static calculateViralityScore(post) {
     const { shares, comments, likes } = post;
     return shares * 3 + (comments.length || 0) * 2 + likes * 1;
   }
 
-  // trending hashtags across posts
+ 
   static findTrendingHashtags(posts) {
     const hashtagMap = new Map();
-    posts.forEach(post => {
+    posts.forEach((post) => {
       const hashtags = post.content.match(/#\w+/g);
       if (hashtags) {
-        hashtags.forEach(tag => {
+        hashtags.forEach((tag) => {
           hashtagMap.set(tag, (hashtagMap.get(tag) || 0) + 1);
         });
       }
     });
     return Array.from(hashtagMap.entries())
       .sort((a, b) => b[1] - a[1])
-      .map(entry => entry[0]);
+      .map((entry) => entry[0]);
   }
 }
+
 
 class User {
   constructor(id, username, email, followers, following, posts = []) {
@@ -60,7 +62,9 @@ class User {
 
   set username(newName) {
     if (!/^[a-zA-Z0-9_]+$/.test(newName)) {
-      throw new Error("Invalid username. Use only letters, numbers, or underscore.");
+      throw new Error(
+        "Invalid username. Use only letters, numbers, or underscore."
+      );
     }
     this._username = newName;
   }
@@ -87,11 +91,11 @@ class User {
 
   // simulate growth
   static getUserGrowthRate(user) {
-    const growth = user.followers * 0.1; 
+    const growth = user.followers * 0.1;
     return user.followers + growth;
   }
 
-  // compare users
+
   static compareUsers(user1, user2) {
     const newObj = {};
     Object.assign(
@@ -104,95 +108,226 @@ class User {
 }
 
 
+class AnalyticsEngine {
+  static calculateViralityScore(post) {
+    const { shares, comments, likes } = post;
+    return shares * 3 + (comments.length || 0) * 2 + likes * 1;
+  }
+
+  static findTrendingHashtags(posts) {
+    const hashtagMap = new Map();
+    posts.forEach((post) => {
+      const hashtags = post.content.match(/#\w+/g);
+      if (hashtags) {
+        hashtags.forEach((tag) => {
+          hashtagMap.set(tag, (hashtagMap.get(tag) || 0) + 1);
+        });
+      }
+    });
+    return Array.from(hashtagMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map((entry) => entry[0]);
+  }
+
+  static getUserGrowthRate(user, timeframe) {
+    const growth = user.followers * 0.1; 
+    return user.followers + growth;
+  }
+
+  static compareUsers(user1, user2) {
+    const newObj = {};
+    Object.assign(
+      newObj,
+      { ...user1, followerDifference: "Caleb" },
+      { ...user2, followerDifference: "Caleb Mevis" }
+    );
+    return newObj;
+  }
+}
+
+// --- Step 3 & Step 4 & Step 5: SocialPlatform ---
+class SocialPlatform {
+  constructor(users, posts, analytics) {
+    this.users = [];
+    this.posts = [];
+    this.analytics = [];
+  }
+
+  addUsers(user) {
+    this.users.push(user);
+  }
+
+  addPosts(post) {
+    this.posts.push(post);
+    const user = this.users.find((u) => u.id === post.userId);
+    if (user) user.addPost(post.content);
+  }
+
+  getTopInfluencers(limit = 10) {
+    return [...this.users]
+      .sort((a, b) => b.followers - a.followers)
+      .slice(0, limit);
+  }
+
+  getEngangmentStats() {
+    let totalUsers = this.users.length;
+    let avgFollowers =
+      this.users.reduce((sum, user) => sum + user.followers, 0) /
+      (totalUsers || 1);
+    let totalEngangments = this.posts.reduce(
+      (sum, post) => sum + post.engagementRate,
+      0
+    );
+    return { totalUsers, avgFollowers, totalEngangments };
+  }
+
+  finPostsByTimeframe(startTime, endTime) {
+    return this.posts.filter(
+      (post) => post.timestamp >= startTime && post.timestamp <= endTime
+    );
+  }
+
+  // --- Step 4 ---
+  processUserData({ users, filters = {}, options = {} }) {
+    return users.filter(
+      (user) => !filters.minFollowers || user.followers >= filters.minFollowers
+    );
+  }
+
+  mergePlatformData(...platforms) {
+    const merged = new SocialPlatform();
+    platforms.forEach((platform) => {
+      merged.users.push(...platform.users);
+      merged.posts.push(...platform.posts);
+    });
+    return merged;
+  }
+
+  createUserProfile(user) {
+    const { id, username, email, followers, following, posts } = user;
+    return {
+      id,
+      username,
+      email,
+      followers,
+      following,
+      posts,
+      socialScore: followers * 0.1,
+    };
+  }
+
+  updatePostMetrics(postId, metrics) {
+    const post = this.posts.find((p) => p.id === postId);
+    if (post) Object.assign(post, { ...metrics });
+  }
+
+  // --- Step 5: Default Parameters & Enhanced Objects ---
+  generateReport(
+    timeframe = "week",
+    metrics = ["engagement", "growth"],
+    format = "summary"
+  ) {
+    const key = `report_${timeframe}`;
+    return {
+      timeframe,
+      metrics,
+      format,
+      [key]: true,
+    };
+  }
+
+  createCampaign(name, budget = 1000, ...targetHashtags) {
+    return {
+      name,
+      budget,
+      hashtags: targetHashtags,
+    };
+  }
+
+  schedulePost(content, delay = 0, options = {}) {
+    return {
+      content,
+      delay,
+      options,
+    };
+  }
+   // STEP 6 CALEB
+  fetchUserData(userId){
+    return new Promise((resolve,reject)=>{
+      const user = this.users.find(u=>u.id===userId);
+      if(user){
+        resolve(user);
+      }else{
+        reject("No user found now");
+      }
+    });
+  }
+  publishPost(post){
+    return new Promise((resolve,reject)=>{
+      const user = this.users.find(u=>u.id===post.userId);
+      if(user){
+        user.addPost(post);
+        this.posts.push(post);
+        resolve(post);
+      }else{
+        reject(new Error("No user found"));
+      }
+    });
+  }
+  getAnalyticsData(timeframe){
+    return new Promise((resolve,reject)=>{
+      const data = {
+        userGrowth: AnalyticsEngine.getUserGrowthRate(this.users[0], timeframe),
+        postVirality: AnalyticsEngine.calculateViralityScore(this.posts[0])
+      };
+      resolve(data);
+    });
+  }
+  syncWithExternalAPI(){
+    return new Promise((resolve,reject)=>{
+      setTimeout(()=>{
+        const success = true; // Simulate success or failure
+        if(success){
+          resolve("The API promise resolved");
+        }else{
+          reject(new Error("Failed to fetch"));
+        }
+      },1000);
+    });
+  }
+}
+
+
 
 const user1 = new User(1, "john_doe", "john@example.com", 15000, 500);
-
-console.log(user1.isInfluencer()); // true
-console.log(user1.followerRatio);  // 0.033...
+console.log(user1.isInfluencer()); 
+console.log(user1.followerRatio); 
 
 const post = new Post(1, 1, "Great day! #sunny #happy", Date.now(), 100, 20, [
   "Nice!",
   "Awesome",
 ]);
-console.log(post.engagementRate > 0); // true
+console.log(post.engagementRate > 0); 
 
 try {
   user1.username = "invalid-name!";
 } catch (error) {
-  console.log("Username validation working"); // will print
+  console.log("Username validation working"); 
 }
 
 const firstPost = user1.addPost("Hello World! #FirstPost");
 console.log(user1.posts.length); // 1
-console.log(firstPost.content.includes("#FirstPost")); // true
-console.log(firstPost.timestamp > 0); // true
-
+console.log(firstPost.content.includes("#FirstPost")); 
 
 const posts = [
   new Post(1, 1, "Loving this #sunny day", Date.now(), 10, 2, []),
   new Post(2, 1, "Workout time #fitness", Date.now(), 20, 5, []),
   new Post(3, 1, "Chilling #sunny vibes", Date.now(), 15, 3, []),
 ];
-
 console.log(Post.getPostsByHashtag(posts, "sunny").length); // 2
-console.log(Post.findTrendingHashtags(posts)); // ['#sunny', '#fitness']
+console.log(Post.findTrendingHashtags(posts)); 
 
-const user2 = new User(2, "user2", "user2@test.com", 500, 200);
-console.log(User.getUserGrowthRate(user1)); // simulate growth
-console.log(User.compareUsers(user1, user2));
-
-// STEP 2
-class  AnalyticsEngine{
-
-      static calculateViralityScore(post){
-        const {shares, comments, likes} = post;
-        return (shares*3)+(comments.length || 0)*2+(likes *1);
-            }
-      static findTrendingHashtags(posts){
-        const hashtagMap = new Map();
-        posts.forEach(post => {
-          const hashtags = post.content.match(/#\w+/g);
-          if(hashtags){
-            hashtags.forEach(tag => {
-              hashtagMap.set(tag, (hashtagMap.get(tag) || 0) + 1);
-            });
-          }
-        });
-        return Array.from(hashtagMap.entries())
-          .sort((a, b) => b[1] - a[1])
-          .map(entry => entry[0]);
-      }
-      static getUserGrowthRate(user, timeframe){
-        // Simulate growth rate calculation
-        const growth = user.followers * 0.1; // 10% growth
-        return user.followers + growth;
-
-      }
-      static compareUsers(user1, user2){
-        // if(user1 === user2){
-        //   return true;
-        // }else{
-        //   return false;
-        // }
-        const newObj = {}
-         
-         Object.assign(newObj, {...user1,followerDifference :"Caleb"},{...user2,followerDifference :"Caleb Mevis"});
-         return newObj;
-      }
-    } 
-    const post1 = new Post(
-  1,
-  1,
-  "Viral content #trending",
-  new Date(),
-  1000,
-  500,
-  []
-);
-// console.log(Post);
-
-// TESTING RESULT
-
+const post1 = new Post(1, 1, "Viral content #trending", new Date(), 1000, 500, []);
 const post2 = new Post(2, 1, "Normal post #daily", new Date(), 10, 2, []);
 
 const virality = AnalyticsEngine.calculateViralityScore(post1);
@@ -233,4 +368,4 @@ class SocialPlatform{
   finPostsByTimeframe(startTime,endTime){
     return this.posts.filter((post)=>post.timestamp>=startTime && post.timestamp<=endTime);
   }
-} 
+}
