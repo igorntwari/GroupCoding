@@ -82,3 +82,4 @@ manager.addTask(task2);
 console.log(manager.getTasksByPriority("high").length); // Expected: 2
 console.log(manager.getCompletedTasksCount()); // Expected: 1
 console.log(manager.getAverageTaskAge()>0); // Expected: true
+
