@@ -233,4 +233,4 @@ class SocialPlatform{
   finPostsByTimeframe(startTime,endTime){
     return this.posts.filter((post)=>post.timestamp>=startTime && post.timestamp<=endTime);
   }
-}
+} 
