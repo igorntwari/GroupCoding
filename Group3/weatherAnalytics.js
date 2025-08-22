@@ -173,4 +173,23 @@ class WeatherStation {
     })
   }
 }
+  generateForecast(days = 7, model = "simple", options = {}){
+    return [days,model,options]
+  }
+  createAlert(type = 'none', severity = "medium", ...conditions){
+    return{
+      type,
+      severity,
+      conditions
+    }
+  }
+  getStatistics(period = "week", metrics = ["temperature", "humidity"]){
+    return{
+      temperature:metrics[0],
+      humidity:metrics[1]
+
+    }
+  }
+}
+
 
