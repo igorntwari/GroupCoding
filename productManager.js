@@ -1,45 +1,44 @@
-
 class Product {
-  constructor(id, name, price, category, stock) {
-    this.name = name;
-    this.id = id;
-    this.name = name;
-    this.price = price;
-    this.category = category;
-    this.stock = stock;
-  }
-
-
-  getInfo = function () {
-    return `Product: ${this.name} (ID: ${this.id}) - $${this.price} - Category: ${this.category}`
-  }
-  get isAvailable() {
-    return this.stock > 0 ? true : false;
-  }
-  set price(value) {
-    if (value <= 0) {
-      throw new Error("Price can't be below zero");
+    constructor(id, name, price, category, stock) {
+        this.name = name;
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.stock = stock;
     }
-    this._price = value;
-  }
-  set stock(val) {
-    if (val < 0) {
-      throw new Error("stock have always to be positive")
+
+
+    getInfo = function () {
+        return `Product: ${this.name} (ID: ${this.id}) - $${this.price} - Category: ${this.category}`
     }
-    this._stock = val;
-  }
-
-  static comparePrice(product1, product2) {
-    if (product1.price === product2.price) {
-      return `The Products price are equal`
+    get isAvailable() {
+        return this.stock > 0 ? true : false;
     }
-    return product1.price > product2.price ? product2 : product1;
-  }
+    set price(value) {
+        if (value <= 0) {
+            throw new Error("Price can't be below zero");
+        }
+        this._price = value;
+    }
+    set stock(val) {
+        if (val < 0) {
+            throw new Error ("stock have always to be positive")
+        }
+        this._stock = val;
+    }
 
-  static generateId() {
-    return Math.floor(100000 + Math.random() * 900000);
-  }
+      static comparePrice(product1, product2) {
+        if (product1.price === product2.price) {
+            return `The Products price are equal`
+        }
+        return product1.price > product2.price ? product2 : product1;
+    }
 
+    static generateId() {
+        return Math.floor(100000 + Math.random() * 900000);
+    }
+    
 }
 
 class ProductManager {
@@ -62,11 +61,11 @@ class ProductManager {
   getTotalValue() {
     return this.products.reduce((total, p) => total + (p.price * p.stock), 0);
   }
-  updateProduct({ id, updates }) {
-    this.products = this.products.map(elm =>
-      elm.id === id ? { ...elm, ...updates } : elm
-    );
-  }
+    updateProduct({ id, updates }) {
+        this.products = this.products.map(elm =>
+            elm.id === id ? {...elm, ...updates } : elm
+        );
+    }
 
   getProductSummary() {
     return this.products.map(({ name, _price, category }) => ({
@@ -96,7 +95,7 @@ class ProductManager {
     async fetchProductData(id) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        const product = this.products.find(proi => proi.id === id);
+        const product = this.products.find(p => p.id === id);
         if (product) {
           resolve(product);
         } else {
@@ -121,34 +120,5 @@ class ProductManager {
     });
   }
 
-
-categoryMap (){
-  const map1 = new Map()
-  const set1 = new Set(this.products)
-  this.products.forEach(e=>{
-    map1.set(e.id,e.category)
-  })
-const uniqueSuppliers ={}
-set1.set(uniqueSuppliers)
-return set1
 }
-
-  addSupplier(productId, supplier) {
-   
-    this.uniqueSuppliers.add(supplier);
-
-    
-    if (!this.supplierMap.has(productId)) {
-      this.supplierMap.set(productId, new Set());
-    }
-    this.supplierMap.get(productId).add(supplier);
-  }
-
-
-
-
-
-}
-
-
 
