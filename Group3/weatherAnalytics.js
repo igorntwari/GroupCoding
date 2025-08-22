@@ -129,3 +129,50 @@ nyc.addReading(reading);
 
 
 
+class WeatherStation {
+  constructor() {
+    this.locations = [];
+  }
+  addLocation(location) {
+    this.locations.push(location);
+  }
+  getAverageTemperature() {
+    const allReadings = []
+    this.locations.forEach((loc) => {
+      allReadings.push(...loc.readings_array)
+    })
+    if (allReadings.length === 0) {
+      return null;
+    }
+    return (
+     Math.round( allReadings.reduce((sum, reading) => sum + reading.temperature, 0) /
+      allReadings.length)
+    )
+  }
+
+  findHottestLocation() {
+    if (this.locations.length === 0) return null
+
+    return this.locations.reduce((hottest, loc) => {
+      return loc.getAverageTemperature() > hottest.getAverageTemperature()
+        ? loc
+        : hottest;
+    });
+  }
+
+  getReadingsByDateRange(startDate, endDate) {
+    const allReadings = this.locations.map((loc) => loc.readings);
+    return allReadings.filter((r) => r.timestamp >= startDate && r.timestamp <= endDate);
+  }
+}
+const station = new WeatherStation();
+// const nyc = new Location("New York", 40.7128, -74.006, "EST");
+const reading1 = new WeatherReading(1, "New York", 25, 60, 1013, 15);
+const reading2 = new WeatherReading(2, "New York", 30, 65, 1015, 10);
+
+nyc.addReading(reading1);
+nyc.addReading(reading2);
+station.addLocation(nyc);
+
+console.log(station.getAverageTemperature()); // Expected: 27.5
+console.log(station.findHottestLocation().name); // Expected: "New York"
