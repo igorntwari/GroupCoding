@@ -6,7 +6,7 @@ class Post{
        this.timestamp =timestamp.getHours();
        this.likes =likes;
        this.shares =shares;
-       this.comments =comments;
+       this.comments =[];
      }
 }
 
@@ -17,16 +17,16 @@ class User{
        this.email =email;
        this.followers =followers;
        this.following =following;
-       this.posts =posts;
+       this.posts =[];
      }
 }
 User.prototype.addPost = function(content){
     return content;
 } 
-const user = new User(1, "john_doe", "john@example.com",0,0,[]);
+const user = new User(1, "john_doe", "john@example.com", 15000, 500,[200]);
 const post  = new Post(1, 1, "Hello World! #FirstPost", new Date(), 0, 0, [])
 console.log(post)
-
+console.log(user)
 console.log(user.posts.length); // Expected: 1
 console.log(post.content.includes("#FirstPost")); // Expected: true
 console.log(post.timestamp > 0); // Expected: true
@@ -36,8 +36,9 @@ console.log(post.timestamp > 0); // Expected: true
 class  AnalyticsEngine{
 
       static calculateViralityScore(post){
-        return post.likes;
-      }
+        const {shares, comments, likes} = post;
+        return (shares*3)+(comments.length || 0)*2+(likes *1);
+            }
       static findTrendingHashtags(posts){
         const hashtagMap = new Map();
         posts.forEach(post => {
@@ -53,7 +54,10 @@ class  AnalyticsEngine{
           .map(entry => entry[0]);
       }
       static getUserGrowthRate(user, timeframe){
-        
+        // Simulate growth rate calculation
+        const growth = user.followers * 0.1; // 10% growth
+        return user.followers + growth;
+
       }
       static compareUsers(user1, user2){
         // if(user1 === user2){
@@ -76,7 +80,7 @@ class  AnalyticsEngine{
   500,
   []
 );
-console.log(Post);
+// console.log(Post);
 
 // TESTING RESULT
 
@@ -93,4 +97,7 @@ const user1 = new User(1, "user1", "user1@test.com", 1000, 100);
 const user2 = new User(2, "user2", "user2@test.com", 500, 200);
 const comparison = AnalyticsEngine.compareUsers(user1, user2);
 console.log(comparison.hasOwnProperty("followerDifference"));
+console.log(AnalyticsEngine.getUserGrowthRate(user,Post.timestamp))
+
+// console.log(post1.content)
       
