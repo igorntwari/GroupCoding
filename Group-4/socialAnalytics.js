@@ -146,6 +146,87 @@ class AnalyticsEngine {
 
 }
 
+
+const firstPost = user1.addPost("Hello World! #FirstPost");
+console.log(user1.posts.length); // 1
+console.log(firstPost.content.includes("#FirstPost")); // true
+console.log(firstPost.timestamp > 0); // true
+
+
+const posts = [
+  new Post(1, 1, "Loving this #sunny day", Date.now(), 10, 2, []),
+  new Post(2, 1, "Workout time #fitness", Date.now(), 20, 5, []),
+  new Post(3, 1, "Chilling #sunny vibes", Date.now(), 15, 3, []),
+];
+
+console.log(Post.getPostsByHashtag(posts, "sunny").length); // 2
+console.log(Post.findTrendingHashtags(posts)); // ['#sunny', '#fitness']
+
+const user2 = new User(2, "user2", "user2@test.com", 500, 200);
+console.log(User.getUserGrowthRate(user1)); // simulate growth
+console.log(User.compareUsers(user1, user2));
+
+// STEP 2
+class  AnalyticsEngine{
+
+      static calculateViralityScore(post){
+        const {shares, comments, likes} = post;
+        return (shares*3)+(comments.length || 0)*2+(likes *1);
+            }
+      static findTrendingHashtags(posts){
+        const hashtagMap = new Map();
+        posts.forEach(post => {
+          const hashtags = post.content.match(/#\w+/g);
+          if(hashtags){
+            hashtags.forEach(tag => {
+              hashtagMap.set(tag, (hashtagMap.get(tag) || 0) + 1);
+            });
+          }
+        });
+        return Array.from(hashtagMap.entries())
+          .sort((a, b) => b[1] - a[1])
+          .map(entry => entry[0]);
+      }
+      static getUserGrowthRate(user, timeframe){
+        // Simulate growth rate calculation
+        const growth = user.followers * 0.1; // 10% growth
+        return user.followers + growth;
+
+      }
+      static compareUsers(user1, user2){
+     
+        const newObj = {}
+         
+         Object.assign(newObj, {...user1,followerDifference :"Caleb"},{...user2,followerDifference :"Caleb Mevis"});
+         return newObj;
+      }
+    } 
+    const post1 = new Post(
+  1,
+  1,
+  "Viral content #trending",
+  new Date(),
+  1000,
+  5000,
+  []
+);
+// console.log(Post);
+
+// TESTING RESULT
+
+const post2 = new Post(2, 1, "Normal post #daily", new Date(), 10, 2, []);
+
+const virality = AnalyticsEngine.calculateViralityScore(post1);
+console.log(virality > AnalyticsEngine.calculateViralityScore(post2)); // Expected: true
+
+const trending = AnalyticsEngine.findTrendingHashtags([post1, post2]);
+console.log(Array.isArray(trending)); // Expected: true
+console.log(trending.lenght >= 2); // Expected: true
+
+console.log(AnalyticsEngine.getUserGrowthRate(user1)); // simulate growth
+console.log(AnalyticsEngine.compareUsers(user1, user2));
+
+
 // --- Step 3 & Step 4 & Step 5: SocialPlatform ---
 class SocialPlatform {
   constructor(users, posts, analytics) {
