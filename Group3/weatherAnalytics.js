@@ -47,7 +47,3 @@ class WeatherReading {
 }
 
 
-const reading = new WeatherReading(1, "Miami", 30, 80, 1013, 25);
-console.log(reading.comfortIndex); // Expected: number between 0-100
-console.log(reading.windCategory); // Expected: "moderate" or "strong"
-console.log(reading.isExtremeWeather()); // Expected: boolean
