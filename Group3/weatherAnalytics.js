@@ -166,7 +166,6 @@ class WeatherStation {
   }
 }
 const station = new WeatherStation();
-// const nyc = new Location("New York", 40.7128, -74.006, "EST");
 const reading1 = new WeatherReading(1, "New York", 25, 60, 1013, 15);
 const reading2 = new WeatherReading(2, "New York", 30, 65, 1015, 10);
 
