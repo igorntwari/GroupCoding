@@ -43,7 +43,7 @@ class User{
 
 //valens 2
  
-// Masabo
+// Masabo step 3
 class TaskManager{
     constructor(user,task){
         this.user=[]
@@ -68,18 +68,37 @@ class TaskManager{
         }).reduce((a,b)=>a+b)/this.task.length
     }
     
+    // Valens step 4
+
+    createTaskBatch(...taskData){
+        taskData.forEach((elem,index)=>{
+            let task = new Task(index+1,...Object.values(elem))
+            this.task.push(task)
+        })
+        return this.task
+
+    }
+    cloneTask(originalTask,updates = {}){
+        Object.keys(updates).map(element=>{
+            originalTask[element] = updates[element]
+        })
+        return originalTask
+    }
+    assignMultipleTasks(userId, ...taskIds){
+        let user =this.user.filter((elem)=>elem.id == userId)[0]
+        console.log("tasks",this.task)
+        taskIds.map(taskId=>{
+            let task = this.task.filter((elem)=>elem.id = taskId)
+            if(task.length == 0) return 0
+            task = task[0]
+            console.log(task)
+            user.tasks.push(task)
+            return user
+        })
+        return user
+    }
+    //valens step 4
+    
 }
 
-const manager = new TaskManager();
-const user = new User(1, "John", "john@example.com", "dev");
-const task1 = new Task(1, "Task 1", "Description 1", "completed", "high");
-const task2 = new Task(2, "Task 2", "Description 2", "pending", "high");
-
-manager.addUser(user);
-manager.addTask(task1);
-manager.addTask(task2);
-
-console.log(manager.getTasksByPriority("high").length); // Expected: 2
-console.log(manager.getCompletedTasksCount()); // Expected: 1
-console.log(manager.getAverageTaskAge()>0); // Expected: true
-
+// Masabo step3
