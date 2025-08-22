@@ -45,6 +45,9 @@ class Product {
 class ProductManager {
   constructor() {
     this.products = [];
+    this.categoryMap = new Map()
+    this.uniqueSuppliers = new Set()
+    this.supplierMap = new Map
   }
 
   addProduct(product) {
@@ -119,5 +122,19 @@ class ProductManager {
   async getCategories() {
     return [...new Set(this.products.map((p) => p.category))];
   }
+
+
+
+    addSupplier(productId, supplier) {
+   
+    this.uniqueSuppliers.add(supplier);
+
+    
+    if (!this.supplierMap.has(productId)) {
+      this.supplierMap.set(productId, new Set());
+    }
+    this.supplierMap.get(productId).add(supplier);
+  }
+
 }
 
