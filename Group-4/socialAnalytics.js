@@ -22,7 +22,7 @@ class Post {
 class User {
   constructor(id, username, email, followers, following, posts = []) {
     this.id = id;
-    this._username = username;
+    this._username = username
     this.email = email;
     this.followers = followers;   
     this.following = following;   
