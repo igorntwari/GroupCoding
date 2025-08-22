@@ -165,13 +165,3 @@ class WeatherStation {
     return allReadings.filter((r) => r.timestamp >= startDate && r.timestamp <= endDate);
   }
 }
-const station = new WeatherStation();
-const reading1 = new WeatherReading(1, "New York", 25, 60, 1013, 15);
-const reading2 = new WeatherReading(2, "New York", 30, 65, 1015, 10);
-
-nyc.addReading(reading1);
-nyc.addReading(reading2);
-station.addLocation(nyc);
-
-console.log(station.getAverageTemperature()); // Expected: 27.5
-console.log(station.findHottestLocation().name); // Expected: "New York"
