@@ -3,29 +3,27 @@ class Post {
     this.id = id;
     this.userId = userId;
     this.content = content;
-    this.timestamp = timestamp; 
-    
+    this.timestamp = timestamp;
+
     this.likes = likes;
     this.shares = shares;
     this.comments = comments;
   }
-
 
   get engagementRate() {
     const totalInteractions = this.likes + this.shares + this.comments.length;
     return totalInteractions / 100; 
   }
 
-
   static getPostsByHashtag(posts, hashtag) {
-    return posts.filter(post => post.content.includes(#${hashtag}));
+    return posts.filter(post => post.content.includes(`#${hashtag}`));
   }
 }
 
 class User {
   constructor(id, username, email, followers, following, posts = []) {
     this.id = id;
-    this._username = username; 
+    this._username = username;
     this.email = email;
     this.followers = followers;
     this.following = following;
@@ -48,9 +46,7 @@ class User {
     return this._username;
   }
 
-
   isInfluencer = () => this.followers > 10000;
-
 
   addPost(content) {
     const newPost = new Post(
@@ -67,27 +63,22 @@ class User {
   }
 }
 
+// ✅ Use 'user1' consistently
+const user1 = new User(1, "john_doe", "john@example.com", 15000, 500);
 
-const user = new User(1, "john_doe", "john@example.com", 15000, 500);
-
-
-console.log(user.isInfluencer()); 
-
-
-console.log(user.followerRatio); 
-
+console.log(user1.isInfluencer()); // true
+console.log(user1.followerRatio);  // 0.033...
 
 const post = new Post(1, 1, "Great day! #sunny #happy", Date.now(), 100, 20, [
   "Nice!",
   "Awesome",
 ]);
-console.log(post.engagementRate > 0); 
-
+console.log(post.engagementRate > 0); // true
 
 try {
   user1.username = "invalid-name!";
-} catch (event) {
-  console.log("Username validation working");
+} catch (error) {
+  console.log("Username validation working"); // will print
 }
 
 const firstPost = user1.addPost("Hello World! #FirstPost");
